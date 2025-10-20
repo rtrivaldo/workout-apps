@@ -18,10 +18,13 @@ import z from 'zod';
 import { toast } from 'sonner';
 import { Loader } from 'lucide-react';
 import { registerUser } from '@/actions/auth/register';
+import { useRouter } from 'next/navigation';
 
 type LoginFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
@@ -48,6 +51,8 @@ export default function RegisterPage() {
       toast.success(result.message);
 
       form.reset();
+
+      router.push('/login');
     } else if (result.status === 409) {
       toast.warning(result.message);
     } else if (result.status === 500) {
