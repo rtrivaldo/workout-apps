@@ -15,9 +15,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
-import { registerUser } from './actions';
 import { toast } from 'sonner';
 import { Loader } from 'lucide-react';
+import { registerUser } from '@/actions/auth/register';
 
 type LoginFormValues = z.infer<typeof registerSchema>;
 

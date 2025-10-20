@@ -15,13 +15,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
-import { login } from './actions';
 import { toast } from 'sonner';
 import { Loader } from 'lucide-react';
+import { login } from '@/actions/auth/login';
+import { useRouter } from 'next/navigation';
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
@@ -46,6 +49,8 @@ export default function LoginPage() {
       toast.success(result.message);
 
       form.reset();
+
+      router.push('/');
     } else if (result.status === 401) {
       toast.warning(result.message);
     } else {
