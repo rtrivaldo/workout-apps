@@ -12,21 +12,47 @@ import {
 import { Input } from '@/components/ui/input';
 import { loginSchema } from '@/lib/schemas/login-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { login } from './actions';
+import { toast } from 'sonner';
+import { Loader } from 'lucide-react';
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
+      email: '',
+      password: '',
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log('Form Data:', data);
+  const onSubmit = async (data: LoginFormValues) => {
+    setIsLoading(true);
+
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    const result = await login(formData);
+
+    if (result.status === 200 && result.success) {
+      toast.success(result.message);
+
+      form.reset();
+    } else if (result.status === 401) {
+      toast.warning(result.message);
+    } else {
+      toast.error(result.message);
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -40,12 +66,16 @@ export default function LoginPage() {
 
           <FormField
             control={form.control}
-            name='username'
+            name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder='John Doe' {...field} />
+                  <Input
+                    type='email'
+                    placeholder='john.doe@gmail.com'
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -66,8 +96,8 @@ export default function LoginPage() {
             )}
           />
 
-          <Button type='submit' className='w-full'>
-            Submit
+          <Button type='submit' disabled={isLoading} className='w-full'>
+            {isLoading ? <Loader className='animate-spin' /> : 'Login'}
           </Button>
         </form>
       </Form>
