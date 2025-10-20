@@ -12,12 +12,18 @@ import {
 import { Input } from '@/components/ui/input';
 import { registerSchema } from '@/lib/schemas/register-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { registerUser } from './actions';
+import { toast } from 'sonner';
+import { Loader } from 'lucide-react';
 
 type LoginFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -28,8 +34,27 @@ export default function RegisterPage() {
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log('Form Data:', data);
+  const onSubmit = async (data: LoginFormValues) => {
+    setIsLoading(true);
+
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    const result = await registerUser(formData);
+
+    if (result.status === 201 && result.success) {
+      toast.success(result.message);
+
+      form.reset();
+    } else if (result.status === 409) {
+      toast.warning(result.message);
+    } else if (result.status === 500) {
+      toast.error(result.message);
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -37,9 +62,9 @@ export default function RegisterPage() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className='w-[300px] space-y-4 border p-6 rounded-xl shadow-sm'
+          className='w-[500px] space-y-4 border p-6 rounded-xl shadow-sm'
         >
-          <h1>Register</h1>
+          <h1 className='text-center font-bold text-3xl mb-6'>Register</h1>
 
           <FormField
             control={form.control}
@@ -57,7 +82,7 @@ export default function RegisterPage() {
 
           <FormField
             control={form.control}
-            name='username'
+            name='email'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -101,8 +126,8 @@ export default function RegisterPage() {
             )}
           />
 
-          <Button type='submit' className='w-full'>
-            Submit
+          <Button type='submit' disabled={isLoading} className='w-full'>
+            {isLoading ? <Loader className='animate-spin' /> : 'Register'}
           </Button>
         </form>
       </Form>
