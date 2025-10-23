@@ -3,6 +3,7 @@
 import { logout } from '@/actions/auth/logout';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { useRouter } from 'next/navigation';
+import { getInitials } from '@/lib/utils';
 
 export default function Navbar({ name }: { name: string }) {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function Navbar({ name }: { name: string }) {
 
       <div className='flex items-center space-x-4'>
         <Avatar className='size-12'>
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarFallback>{getInitials(name)}</AvatarFallback>
         </Avatar>
 
         <div className='flex flex-col'>
