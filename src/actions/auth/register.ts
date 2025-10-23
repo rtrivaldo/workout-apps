@@ -14,10 +14,11 @@ export async function registerUser(formData: FormData) {
       return { success: false, errors: parsed.error.flatten().fieldErrors };
     }
 
-    const { username, email, password } = parsed.data;
+    const { name, age, username, password, bodyWeight, height, fitnessGoal } =
+      parsed.data;
 
     const existingUser = await prisma.user.findFirst({
-      where: { OR: [{ username }, { email }] },
+      where: { username },
     });
 
     if (existingUser) {
@@ -32,15 +33,19 @@ export async function registerUser(formData: FormData) {
 
     await prisma.user.create({
       data: {
+        name,
+        age,
         username,
-        email,
         password: hashedPassword,
+        bodyWeight,
+        height,
+        fitnessGoal,
       },
     });
 
     return { success: true, status: 201, message: 'Registration successful' };
   } catch (error) {
     console.error(error);
-    return { success: false, status: 500, message: 'Server error' };
+    return { success: false, status: 500, message: 'Internal server error' };
   }
 }

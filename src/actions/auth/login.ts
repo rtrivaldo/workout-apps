@@ -16,10 +16,10 @@ export async function login(formData: FormData) {
       return { success: false, errors: parsed.error.flatten().fieldErrors };
     }
 
-    const { email, password } = parsed.data;
+    const { username, password } = parsed.data;
 
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { username },
     });
 
     if (!user) {
@@ -32,7 +32,7 @@ export async function login(formData: FormData) {
 
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-    const token = await new SignJWT({ id: user.id, email: user.email })
+    const token = await new SignJWT({ id: user.id, username: user.username })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('7d')
       .sign(secret);

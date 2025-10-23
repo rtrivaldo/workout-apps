@@ -15,9 +15,13 @@ datasource db {
 
 model User {
   id       Int    @id @default(autoincrement())
+  name     String
+  age      Int
   username String @unique
-  email    String @unique
   password String
+  bodyWeight Float
+  height     Float
+  fitnessGoal String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

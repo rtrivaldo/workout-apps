@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { Loader } from 'lucide-react';
 import { login } from '@/actions/auth/login';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
@@ -30,7 +31,7 @@ export default function LoginPage() {
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   });
@@ -61,51 +62,59 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='flex justify-center items-center min-h-screen'>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className='w-[300px] space-y-4 border p-6 rounded-xl shadow-sm'
-        >
-          <h1>Login</h1>
+    <div className='flex flex-col justify-center items-center min-h-screen container mx-auto'>
+      <h1 className='text-5xl font-black'>FitTrack</h1>
+      <div className='mt-8 w-full max-w-[400px] md:w-[400px] px-10 py-8 rounded-2xl bg-[#F4F6F6]'>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            <div>
+              <h2 className='font-semibold text-lg'>Welcome!</h2>
+              <p className='mt-2 text-[#A9A9A9] leading-tight'>
+                Enter your credentials to access your workout dashboard
+              </p>
+            </div>
 
-          <FormField
-            control={form.control}
-            name='email'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type='email'
-                    placeholder='john.doe@gmail.com'
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name='username'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Username' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name='password'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type='password' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type='password' placeholder='Password' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Button type='submit' disabled={isLoading} className='w-full'>
-            {isLoading ? <Loader className='animate-spin' /> : 'Login'}
-          </Button>
-        </form>
-      </Form>
+            <Button type='submit' disabled={isLoading} className='w-full'>
+              {isLoading ? <Loader className='animate-spin' /> : 'Sign In'}
+            </Button>
+          </form>
+        </Form>
+
+        <p className='mt-6 text-sm text-center'>
+          Don't have an account yet?{' '}
+          <Link href='/register' className='underline underline-offset-2'>
+            Sign up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
