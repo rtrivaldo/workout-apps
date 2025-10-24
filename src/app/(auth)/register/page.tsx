@@ -197,9 +197,9 @@ export default function RegisterPage() {
                           >
                             {form.watch('fitnessGoal')
                               ? fitnessGoals.find(
-                                  goal =>
-                                    goal.value === form.watch('fitnessGoal')
-                                )?.label
+                                goal =>
+                                  goal.value === form.watch('fitnessGoal')
+                              )?.label
                               : 'Choose you goal'}
                             <ChevronsUpDown className='opacity-50' />
                           </Button>
@@ -268,7 +268,7 @@ export default function RegisterPage() {
                 disabled={isLoading}
                 className='mt-5.5 w-full'
               >
-                {isLoading ? <Loader className='animate-spin' /> : 'Sign In'}
+                {isLoading ? <Loader className='animate-spin' /> : 'Sign up'}
               </Button>
             </div>
           </form>
