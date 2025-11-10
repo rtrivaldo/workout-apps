@@ -23,23 +23,30 @@ import { updateProfileSchema } from '@/lib/schemas/update-profile-schema';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { updateUserData } from '@/actions/auth/profile';
+import { ActivityLevel, FitnessGoal, Gender, User } from '@prisma/client';
+import { genders } from '@/app/types/gender';
+import { activityLevels } from '@/app/types/activityLevel';
 
 type UpdateProfileFormValues = z.infer<typeof updateProfileSchema>;
 
-export default function UpdateProfileForm({ userId }: { userId: number }) {
+export default function UpdateProfileForm({ user }: { user: User }) {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [openFitnessGoal, setOpenFitnessGoal] = useState(false);
+  const [openGender, setOpenGender] = useState(false);
+  const [openActivityLevel, setOpenActivityLevel] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      name: '',
-      age: '',
-      bodyWeight: '',
-      height: '',
-      fitnessGoal: '',
+      name: user.name || '',
+      age: user.age || '',
+      gender: user.gender || undefined,
+      bodyWeight: user.bodyWeight || '',
+      height: user.height || '',
+      fitnessGoal: user.fitnessGoal,
+      activityLevel: user.activityLevel || undefined,
     },
   });
 
@@ -51,12 +58,12 @@ export default function UpdateProfileForm({ userId }: { userId: number }) {
       formData.append(key, String(value));
     });
 
-    const result = await updateUserData(formData, userId);
+    const result = await updateUserData(formData, user.id);
 
     if (result.status === 201 && result.success) {
       toast.success(result.message);
 
-      form.reset();
+      router.refresh();
     } else if (result.status === 409) {
       toast.warning(result.message);
     } else if (result.status === 500) {
@@ -122,6 +129,71 @@ export default function UpdateProfileForm({ userId }: { userId: number }) {
 
           <FormField
             control={form.control}
+            name='gender'
+            render={({ fieldState }) => (
+              <FormItem>
+                <FormLabel>Gender</FormLabel>
+                <FormControl>
+                  <Popover open={openGender} onOpenChange={setOpenGender}>
+                    <PopoverTrigger
+                      asChild
+                      className={fieldState.error && 'border-red-500'}
+                    >
+                      <Button
+                        variant='outline'
+                        role='combobox'
+                        aria-expanded={openGender}
+                        className='justify-between'
+                      >
+                        {form.watch('gender')
+                          ? genders.find(g => g.value === form.watch('gender'))
+                              ?.label
+                          : 'Select your gender'}
+                        <ChevronsUpDown className='opacity-50' />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className='md:w-[250px] p-0'>
+                      <Command>
+                        <CommandList>
+                          <CommandGroup>
+                            {genders.map(gender => (
+                              <CommandItem
+                                key={gender.value}
+                                value={gender.value}
+                                onSelect={currentValue => {
+                                  form.setValue(
+                                    'gender',
+                                    currentValue === form.watch('gender')
+                                      ? undefined!
+                                      : (currentValue as Gender)
+                                  );
+                                  setOpenGender(false);
+                                }}
+                              >
+                                {gender.label}
+                                <Check
+                                  className={cn(
+                                    'ml-auto',
+                                    form.watch('gender') === gender.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0'
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name='height'
             render={({ field }) => (
               <FormItem>
@@ -145,7 +217,10 @@ export default function UpdateProfileForm({ userId }: { userId: number }) {
               <FormItem>
                 <FormLabel>Fitness Goal</FormLabel>
                 <FormControl>
-                  <Popover open={open} onOpenChange={setOpen}>
+                  <Popover
+                    open={openFitnessGoal}
+                    onOpenChange={setOpenFitnessGoal}
+                  >
                     <PopoverTrigger
                       asChild
                       className={fieldState.error && 'border-red-500'}
@@ -153,7 +228,7 @@ export default function UpdateProfileForm({ userId }: { userId: number }) {
                       <Button
                         variant='outline'
                         role='combobox'
-                        aria-expanded={open}
+                        aria-expanded={openFitnessGoal}
                         className='justify-between'
                       >
                         {form.watch('fitnessGoal')
@@ -176,10 +251,10 @@ export default function UpdateProfileForm({ userId }: { userId: number }) {
                                   form.setValue(
                                     'fitnessGoal',
                                     currentValue === form.watch('fitnessGoal')
-                                      ? ''
-                                      : currentValue
+                                      ? undefined!
+                                      : (currentValue as FitnessGoal)
                                   );
-                                  setOpen(false);
+                                  setOpenFitnessGoal(false);
                                 }}
                               >
                                 {goal.label}
@@ -187,6 +262,76 @@ export default function UpdateProfileForm({ userId }: { userId: number }) {
                                   className={cn(
                                     'ml-auto',
                                     form.watch('fitnessGoal') === goal.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0'
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='activityLevel'
+            render={({ fieldState }) => (
+              <FormItem>
+                <FormLabel>Activity Level</FormLabel>
+                <FormControl>
+                  <Popover
+                    open={openActivityLevel}
+                    onOpenChange={setOpenActivityLevel}
+                  >
+                    <PopoverTrigger
+                      asChild
+                      className={fieldState.error && 'border-red-500'}
+                    >
+                      <Button
+                        variant='outline'
+                        role='combobox'
+                        aria-expanded={openActivityLevel}
+                        className='justify-between'
+                      >
+                        {form.watch('activityLevel')
+                          ? activityLevels.find(
+                              level =>
+                                level.value === form.watch('activityLevel')
+                            )?.label
+                          : 'Choose you activity level'}
+                        <ChevronsUpDown className='opacity-50' />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className='md:w-[250px] p-0'>
+                      <Command>
+                        <CommandList>
+                          <CommandGroup>
+                            {activityLevels.map(level => (
+                              <CommandItem
+                                key={level.value}
+                                value={level.value}
+                                onSelect={currentValue => {
+                                  form.setValue(
+                                    'activityLevel',
+                                    currentValue === form.watch('activityLevel')
+                                      ? undefined!
+                                      : (currentValue as ActivityLevel)
+                                  );
+                                  setOpenActivityLevel(false);
+                                }}
+                              >
+                                {level.label}
+                                <Check
+                                  className={cn(
+                                    'ml-auto',
+                                    form.watch('activityLevel') === level.value
                                       ? 'opacity-100'
                                       : 'opacity-0'
                                   )}

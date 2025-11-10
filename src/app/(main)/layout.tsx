@@ -1,6 +1,5 @@
 import getUserData from '@/actions/auth/profile';
 import Navbar from '@/components/Navbar';
-import { getSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
 export default async function MainLayout({
@@ -8,10 +7,9 @@ export default async function MainLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
   const user = await getUserData();
 
-  if (!session || !user) {
+  if (!user) {
     redirect('/login');
   }
 

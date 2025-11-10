@@ -1,10 +1,12 @@
+import getUserData from '@/actions/auth/profile';
 import DashboardMenuCard from '@/components/DashboardMenuCard';
 
-export default function Home() {
+export default async function Home() {
+  const user = await getUserData();
   return (
     <div className='mt-6 p-6 md:p-10 bg-[#F4F6F6] rounded-2xl'>
       <h2 className='text-xl font-semibold'>
-        Hi, Miftah! Welcome to FitTrack Dashboard
+        Hi, {user?.name}! Welcome to FitTrack Dashboard
       </h2>
 
       <div className='mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>

@@ -1,14 +1,14 @@
 export const fitnessGoals = [
   {
-    value: 'lose-weight',
+    value: 'LOSE_WEIGHT',
     label: 'Lose Weight',
   },
   {
-    value: 'gain-weight',
+    value: 'GAIN_WEIGHT',
     label: 'Gain Weight',
   },
   {
-    value: 'improve-health',
-    label: 'Improve Health',
+    value: 'MAINTAIN_WEIGHT',
+    label: 'Maintain Weight',
   },
 ];

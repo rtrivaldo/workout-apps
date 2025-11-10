@@ -10,6 +10,9 @@ export const updateProfileSchema = z.object({
     .int({ message: 'Age must be an integer' })
     .min(13, { message: 'You must be at least 13 years old' })
     .max(100, { message: 'Please enter a valid age' }),
+  gender: z.enum(['MALE', 'FEMALE'], {
+    error: 'Please select a gender',
+  }),
   bodyWeight: z.coerce
     .number({ message: 'Body weight must be a number' })
     .min(30, { message: 'Body weight must be at least 30 kg' })
@@ -18,5 +21,13 @@ export const updateProfileSchema = z.object({
     .number({ message: 'Height must be a number' })
     .min(100, { message: 'Height must be at least 100 cm' })
     .max(250, { message: 'Height must be less than 250 cm' }),
-  fitnessGoal: z.string().min(1, { message: 'Please select a fitness goal' }),
+  fitnessGoal: z.enum(['LOSE_WEIGHT', 'GAIN_WEIGHT', 'MAINTAIN_WEIGHT'], {
+    error: 'Please select a fitness goal',
+  }),
+  activityLevel: z.enum(
+    ['NOT_VERY_ACTIVE', 'LIGHTLY_ACTIVE', 'ACTIVE', 'VERY_ACTIVE'],
+    {
+      error: 'Please select an activity level',
+    }
+  ),
 });

@@ -4,6 +4,7 @@ import { logout } from '@/actions/auth/logout';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { useRouter } from 'next/navigation';
 import { getInitials } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function Navbar({ name }: { name: string }) {
   const router = useRouter();
@@ -21,8 +22,10 @@ export default function Navbar({ name }: { name: string }) {
       <h1 className='text-3xl md:text-4xl font-black'>FitTrack</h1>
 
       <div className='flex items-center space-x-2 md:space-x-4'>
-        <Avatar className='size-10 md:size-12'>
-          <AvatarFallback>{getInitials(name)}</AvatarFallback>
+        <Avatar asChild className='size-10 md:size-12'>
+          <Link href='/profile'>
+            <AvatarFallback>{getInitials(name)}</AvatarFallback>
+          </Link>
         </Avatar>
 
         <div className='flex flex-col'>

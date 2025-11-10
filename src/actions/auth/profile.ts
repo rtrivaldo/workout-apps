@@ -30,7 +30,15 @@ export async function updateUserData(formData: FormData, userId: number) {
       return { success: false, errors: parsed.error.flatten().fieldErrors };
     }
 
-    const { name, age, bodyWeight, height, fitnessGoal } = parsed.data;
+    const {
+      name,
+      age,
+      gender,
+      bodyWeight,
+      height,
+      fitnessGoal,
+      activityLevel,
+    } = parsed.data;
 
     const existingUser = await prisma.user.findFirst({
       where: { id: userId },
@@ -44,16 +52,22 @@ export async function updateUserData(formData: FormData, userId: number) {
       };
     }
 
-    await prisma.user.update({
+    console.log(gender, activityLevel);
+
+    const user = await prisma.user.update({
       where: { id: userId },
       data: {
         name,
         age,
+        gender: gender || null,
         bodyWeight,
         height,
         fitnessGoal,
+        activityLevel: activityLevel || null,
       },
     });
+
+    console.log(user);
 
     return { success: true, status: 201, message: 'Update successful' };
   } catch (error) {

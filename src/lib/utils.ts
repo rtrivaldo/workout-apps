@@ -1,3 +1,4 @@
+import { ActivityLevel, Gender } from '@prisma/client';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -21,4 +22,34 @@ export function calculateBMI(weight: number, height: number) {
   const heightM = height / 100;
   const bmi = weight / (heightM * heightM);
   return bmi.toFixed(2);
+}
+
+export function calculateDailyCalories(
+  weight: number,
+  heightCm: number,
+  age: number,
+  gender: Gender,
+  activityLevel: ActivityLevel
+) {
+  let bmr;
+  if (gender === 'MALE') {
+    bmr = 10 * weight + 6.25 * heightCm - 5 * age + 5;
+  } else if (gender === 'FEMALE') {
+    bmr = 10 * weight + 6.25 * heightCm - 5 * age - 161;
+  } else {
+    return 'Invalid gender';
+  }
+
+  const activityFactors = {
+    NOT_VERY_ACTIVE: 1.2,
+    LIGHTLY_ACTIVE: 1.375,
+    ACTIVE: 1.55,
+    VERY_ACTIVE: 1.725,
+  };
+
+  const factor = activityFactors[activityLevel];
+  if (!factor) return 'Invalid activity level';
+
+  const dailyCalories = bmr * factor;
+  return Math.round(dailyCalories);
 }
