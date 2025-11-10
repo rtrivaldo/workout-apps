@@ -143,6 +143,7 @@ export default function AddWorkoutPlanPage() {
                     variant='destructive'
                     size='icon'
                     className='mt-5.5'
+                    disabled={fields.length === 1}
                     onClick={() => remove(index)}
                   >
                     <Trash2 className='h-4 w-4' />
