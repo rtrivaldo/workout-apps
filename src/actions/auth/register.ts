@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { registerSchema } from '@/lib/schemas/register-schema';
+import { FitnessGoal } from '@prisma/client';
 
 import bcrypt from 'bcryptjs';
 
@@ -39,7 +40,7 @@ export async function registerUser(formData: FormData) {
         password: hashedPassword,
         bodyWeight,
         height,
-        fitnessGoal,
+        fitnessGoal: fitnessGoal as FitnessGoal,
       },
     });
 
