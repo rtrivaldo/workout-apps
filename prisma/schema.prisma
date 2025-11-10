@@ -14,15 +14,34 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  age      Int
-  username String @unique
-  password String
-  bodyWeight Float
-  height     Float
-  fitnessGoal String
+  id            Int            @id @default(autoincrement())
+  username      String         @unique
+  password      String
+  name          String
+  age           Int
+  gender        Gender?
+  bodyWeight    Float
+  height        Float
+  fitnessGoal   FitnessGoal
+  activityLevel ActivityLevel?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum ActivityLevel {
+  NOT_VERY_ACTIVE
+  LIGHTLY_ACTIVE
+  ACTIVE
+  VERY_ACTIVE
+}
+
+enum FitnessGoal {
+  LOSE_WEIGHT
+  GAIN_WEIGHT
+  MAINTAIN_WEIGHT
 }

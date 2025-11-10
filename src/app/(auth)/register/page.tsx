@@ -27,13 +27,12 @@ import {
 } from '@/components/ui/popover';
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
+import { fitnessGoals } from '@/app/types/fitnessGoal';
 
 type LoginFormValues = z.infer<typeof registerSchema>;
 
@@ -284,18 +283,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
-const fitnessGoals = [
-  {
-    value: 'lose-weight',
-    label: 'Lose Weight',
-  },
-  {
-    value: 'gain-weight',
-    label: 'Gain Weight',
-  },
-  {
-    value: 'improve-health',
-    label: 'Improve Health',
-  },
-];
