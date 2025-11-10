@@ -24,8 +24,35 @@ model User {
   height        Float
   fitnessGoal   FitnessGoal
   activityLevel ActivityLevel?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workoutPlans WorkoutPlan[]
+}
+
+model WorkoutPlan {
+  id     Int    @id @default(autoincrement())
+  userId Int
+  title  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exercises Exercise[]
+  user      User       @relation(fields: [userId], references: [id])
+}
+
+model Exercise {
+  id            Int    @id @default(autoincrement())
+  name          String
+  totalSets     Int
+  workoutPlanId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workoutPlan WorkoutPlan @relation(fields: [workoutPlanId], references: [id])
 }
 
 enum Gender {

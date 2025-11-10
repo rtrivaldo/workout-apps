@@ -14,7 +14,15 @@ export default async function Home() {
           title='Workout Plan'
           description='Set up and manage your training plan.'
           imageSrc='/images/workout-plan.png'
+          pageUrl='/workout-plan'
           className='bg-[#EBF8FD]'
+        />
+
+        <DashboardMenuCard
+          title='Workout'
+          description='Start and track your workouts.'
+          imageSrc='/images/workout.png'
+          className='bg-[#FFF4F3]'
         />
 
         <DashboardMenuCard
@@ -22,13 +30,6 @@ export default async function Home() {
           description='Manage your food intake and diet plan.'
           imageSrc='/images/diet-plan.png'
           className='bg-[#E1F4E2]'
-        />
-
-        <DashboardMenuCard
-          title='Schedule'
-          description='View and manage your daily schedule.'
-          imageSrc='/images/schedule.png'
-          className='bg-[#FFF4F3]'
         />
 
         <DashboardMenuCard
