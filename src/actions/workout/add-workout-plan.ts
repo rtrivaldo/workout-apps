@@ -22,15 +22,12 @@ export async function addWorkoutPlan(data: AddWorkoutPlanInput) {
       data: {
         userId: user.id,
         title,
-        exercises: {
+        exercisePlan: {
           create: exercises.map(exercise => ({
             name: exercise.name,
             totalSets: exercise.totalSets,
           })),
         },
-      },
-      include: {
-        exercises: true,
       },
     });
 
@@ -39,7 +36,7 @@ export async function addWorkoutPlan(data: AddWorkoutPlanInput) {
       status: 200,
       message: 'Workout plan created successfully',
     };
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
     return { success: false, status: 500, message: 'Internal server error' };
   }

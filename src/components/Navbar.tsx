@@ -19,7 +19,7 @@ export default function Navbar({ name }: { name: string }) {
 
   return (
     <div className='flex justify-between items-center'>
-      <Link href='/' className='text-3xl md:text-4xl font-black'>
+      <Link href={'/'} className='text-3xl md:text-4xl font-black'>
         FitTrack
       </Link>
 

@@ -14,7 +14,7 @@ export async function getWorkoutPlans() {
     const plans = await prisma.workoutPlan.findMany({
       where: { userId: user.id },
       include: {
-        exercises: true,
+        exercisePlan: true,
       },
     });
 
@@ -41,7 +41,7 @@ export async function getWorkoutPlanById(planId: number) {
     const plan = await prisma.workoutPlan.findUnique({
       where: { id: planId, userId: user.id },
       include: {
-        exercises: true,
+        exercisePlan: true,
       },
     });
 
