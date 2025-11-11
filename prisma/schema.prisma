@@ -14,22 +14,27 @@ datasource db {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  username      String         @unique
-  password      String
-  name          String
-  age           Int
-  gender        Gender?
-  bodyWeight    Float
-  height        Float
-  fitnessGoal   FitnessGoal
-  activityLevel ActivityLevel?
+  id                 Int            @id @default(autoincrement())
+  username           String         @unique
+  password           String
+  name               String
+  age                Int
+  gender             Gender?
+  bodyWeight         Float
+  height             Float
+  fitnessGoal        FitnessGoal
+  activityLevel      ActivityLevel? @default(LIGHTLY_ACTIVE)
+  targetWeight       Float?
+  lastCalculatedTdee Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   workoutPlans WorkoutPlan[]
   workouts     Workout[]
+  foods        Food[]
+  dailyLogs    DailyLog[]
+  weightLogs   WeightLog[]
 }
 
 model WorkoutPlan {
@@ -77,6 +82,70 @@ model Exercise {
   name      String
   order     Int
   sets      Set[]
+  
+model Food {
+  id        Int       @id @default(autoincrement())
+  name      String
+  calories  Float
+  protein   Float     @default(0)
+  fat       Float     @default(0)
+  carbs     Float     @default(0)
+  serving   String    @default("1 serving")
+  createdBy Int?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  creator   User?     @relation(fields: [createdBy], references: [id])
+  mealFoods MealFood[]
+}
+
+model DailyLog {
+  id                   Int       @id @default(autoincrement())
+  userId               Int
+  date                 DateTime  @db.Date
+  dailyNeedCalories    Float?
+  manualCalorieTarget  Float?
+  caloriesIn           Float     @default(0)
+  caloriesOut          Float     @default(0)
+  netCalories          Float     @default(0)
+  currentWeight        Float?
+  targetWeight         Float?
+  lastRecalculatedAt   DateTime? @default(now())
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id])
+  meals     Meal[]
+
+  @@unique([userId, date])
+}
+
+model Meal {
+  id         Int        @id @default(autoincrement())
+  dailyLogId Int
+  type       MealType
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  dailyLog   DailyLog   @relation(fields: [dailyLogId], references: [id])
+  mealFoods  MealFood[]
+}
+
+model MealFood {
+  id        Int      @id @default(autoincrement())
+  mealId    Int
+  foodId    Int?
+  portion   Float    @default(1)
+  totalCal  Float    @default(0)
+  caloriesSnapshot Float
+  proteinSnapshot  Float @default(0)
+  fatSnapshot      Float @default(0)
+  carbsSnapshot    Float @default(0)
+  servingSnapshot  String @default("1 serving")
+  foodNameSnapshot String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -90,11 +159,23 @@ model Set {
   reps       Int
   weight     Float
   order      Int
+  meal      Meal     @relation(fields: [mealId], references: [id])
+  food      Food?    @relation(fields: [foodId], references: [id], onDelete: SetNull)
+}
+
+model WeightLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  weight    Float
+  loggedAt  DateTime @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   exercise Exercise @relation(fields: [exerciseId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, loggedAt], name: "userId_loggedAt")
 }
 
 enum Gender {
@@ -113,4 +194,11 @@ enum FitnessGoal {
   LOSE_WEIGHT
   GAIN_WEIGHT
   MAINTAIN_WEIGHT
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
 }

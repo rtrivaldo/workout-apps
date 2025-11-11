@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import prisma from '@/lib/prisma';
-import { registerSchema } from '@/lib/schemas/register-schema';
-import { FitnessGoal } from '@prisma/client';
+import prisma from "@/lib/prisma";
+import { registerSchema } from "@/lib/schemas/register-schema";
+import { FitnessGoal } from "@prisma/client";
 
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 
 export async function registerUser(formData: FormData) {
   try {
@@ -26,7 +26,7 @@ export async function registerUser(formData: FormData) {
       return {
         success: false,
         status: 409,
-        message: 'Username or email already exists',
+        message: "Username already exists",
       };
     }
 
@@ -44,9 +44,9 @@ export async function registerUser(formData: FormData) {
       },
     });
 
-    return { success: true, status: 201, message: 'Registration successful' };
+    return { success: true, status: 201, message: "Registration successful" };
   } catch (error) {
     console.error(error);
-    return { success: false, status: 500, message: 'Internal server error' };
+    return { success: false, status: 500, message: "Internal server error" };
   }
 }
