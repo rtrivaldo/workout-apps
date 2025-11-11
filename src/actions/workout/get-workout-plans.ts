@@ -3,7 +3,7 @@
 import prisma from '@/lib/prisma';
 import getUserData from '../auth/profile';
 
-export default async function getWorkoutPlans() {
+export async function getWorkoutPlans() {
   try {
     const user = await getUserData();
 
@@ -23,6 +23,36 @@ export default async function getWorkoutPlans() {
       status: 200,
       message: 'Workout plans fetched successfully',
       data: plans,
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, status: 500, message: 'Internal server error' };
+  }
+}
+
+export async function getWorkoutPlanById(planId: number) {
+  try {
+    const user = await getUserData();
+
+    if (!user) {
+      return { success: false, status: 401, message: 'Unauthorized' };
+    }
+
+    const plan = await prisma.workoutPlan.findUnique({
+      where: { id: planId, userId: user.id },
+      include: {
+        exercises: true,
+      },
+    });
+
+    if (!plan) {
+      return { success: false, status: 404, message: 'Workout plan not found' };
+    }
+    return {
+      success: true,
+      status: 200,
+      message: 'Workout plan fetched successfully',
+      data: plan,
     };
   } catch (error) {
     console.error(error);
