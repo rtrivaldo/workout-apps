@@ -106,9 +106,9 @@ export default function WorkoutPlanItem({
             </Button>
             <Button
               variant='destructive'
-              className='rounded-lg'
               disabled={isLoading}
               onClick={() => handleDeleteWorkoutPlan(plan.id)}
+              className='rounded-lg w-28'
             >
               {isLoading ? <Loader className='animate-spin' /> : 'Yes, Delete'}
             </Button>
