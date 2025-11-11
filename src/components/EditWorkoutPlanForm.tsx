@@ -35,7 +35,7 @@ export default function EditWorkoutPlanForm({
     resolver: zodResolver(editWorkoutPlanSchema),
     defaultValues: {
       title: workoutPlan.title,
-      exercises: workoutPlan.exercises.map(exercise => ({
+      exercises: workoutPlan.exercisePlan.map(exercise => ({
         name: exercise.name,
         totalSets: exercise.totalSets,
       })),
@@ -50,21 +50,17 @@ export default function EditWorkoutPlanForm({
   const onSubmit = async (data: EditWorkoutPlanValues) => {
     setIsLoading(true);
 
-    try {
-      const result = await EditWorkoutPlan(workoutPlan.id, data);
+    const result = await EditWorkoutPlan(workoutPlan.id, data);
 
-      if (result?.success) {
-        toast.success('Workout plan updated successfully!');
+    if (result?.success) {
+      toast.success('Workout plan updated successfully!');
 
-        router.push('/workout-plan');
-      } else {
-        toast.error(result?.message || 'Failed to update workout plan.');
-      }
-    } catch (error) {
-      toast.error('Something went wrong.');
-    } finally {
-      setIsLoading(false);
+      router.push('/workout-plan');
+    } else {
+      toast.error(result?.message || 'Failed to update workout plan.');
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -132,7 +128,7 @@ export default function EditWorkoutPlanForm({
                         <FormLabel>Total Sets</FormLabel>
                         <FormControl>
                           <Input
-                            type='text'
+                            type='number'
                             placeholder='e.g. 4'
                             {...field}
                             value={field.value ?? ''}

@@ -124,7 +124,7 @@ export default function AddWorkoutPlanPage() {
                         <FormLabel>Total Sets</FormLabel>
                         <FormControl>
                           <Input
-                            type='text'
+                            type='number'
                             placeholder='e.g. 4'
                             {...field}
                             value={field.value ?? ''}

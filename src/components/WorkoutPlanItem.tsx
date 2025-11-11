@@ -65,8 +65,10 @@ export default function WorkoutPlanItem({
             <Ellipsis />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem>Start this plan</DropdownMenuItem>
+        <DropdownMenuContent align='end'>
+          <DropdownMenuItem>
+            <Link href={'/workout'}>Start this workout</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={`/workout-plan/${plan.id}`}>Edit</Link>
           </DropdownMenuItem>
@@ -106,9 +108,9 @@ export default function WorkoutPlanItem({
             </Button>
             <Button
               variant='destructive'
-              className='rounded-lg'
               disabled={isLoading}
               onClick={() => handleDeleteWorkoutPlan(plan.id)}
+              className='rounded-lg w-28'
             >
               {isLoading ? <Loader className='animate-spin' /> : 'Yes, Delete'}
             </Button>

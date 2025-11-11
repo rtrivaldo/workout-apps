@@ -27,7 +27,7 @@ export async function deleteWorkoutPlan(id: number) {
       };
     }
 
-    await prisma.exercise.deleteMany({
+    await prisma.exercisePlan.deleteMany({
       where: { workoutPlanId: id },
     });
 
@@ -40,7 +40,7 @@ export async function deleteWorkoutPlan(id: number) {
       status: 200,
       message: 'Workout plan deleted successfully',
     };
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('Delete Workout Plan Error:', error);
     return { success: false, status: 500, message: 'Internal server error' };
   }
