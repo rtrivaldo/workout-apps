@@ -20,14 +20,14 @@ export async function EditWorkoutPlan(id: number, data: EditWorkoutPlanInput) {
 
     const existingPlan = await prisma.workoutPlan.findUnique({
       where: { id },
-      include: { exercises: true },
+      include: { exercisePlan: true },
     });
 
     if (!existingPlan || existingPlan.userId !== user.id) {
       return { success: false, status: 404, message: 'Workout plan not found' };
     }
 
-    await prisma.exercise.deleteMany({
+    await prisma.exercisePlan.deleteMany({
       where: { workoutPlanId: id },
     });
 
@@ -35,15 +35,12 @@ export async function EditWorkoutPlan(id: number, data: EditWorkoutPlanInput) {
       where: { id },
       data: {
         title,
-        exercises: {
+        exercisePlan: {
           create: exercises.map(exercise => ({
             name: exercise.name,
             totalSets: exercise.totalSets,
           })),
         },
-      },
-      include: {
-        exercises: true,
       },
     });
 
@@ -52,7 +49,7 @@ export async function EditWorkoutPlan(id: number, data: EditWorkoutPlanInput) {
       status: 200,
       message: 'Workout plan updated successfully',
     };
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
     return { success: false, status: 500, message: 'Internal server error' };
   }

@@ -29,6 +29,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   workoutPlans WorkoutPlan[]
+  workouts     Workout[]
 }
 
 model WorkoutPlan {
@@ -39,11 +40,11 @@ model WorkoutPlan {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  exercises Exercise[]
-  user      User       @relation(fields: [userId], references: [id])
+  exercisePlan ExercisePlan[]
+  user         User           @relation(fields: [userId], references: [id])
 }
 
-model Exercise {
+model ExercisePlan {
   id            Int    @id @default(autoincrement())
   name          String
   totalSets     Int
@@ -53,6 +54,47 @@ model Exercise {
   updatedAt DateTime @updatedAt
 
   workoutPlan WorkoutPlan @relation(fields: [workoutPlanId], references: [id])
+}
+
+model Workout {
+  id     Int    @id @default(autoincrement())
+  userId Int
+  title  String
+
+  startTime DateTime
+  endTime   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exercises Exercise[]
+  user      User       @relation(fields: [userId], references: [id])
+}
+
+model Exercise {
+  id        Int    @id @default(autoincrement())
+  workoutId Int
+  name      String
+  order     Int
+  sets      Set[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workout Workout? @relation(fields: [workoutId], references: [id])
+}
+
+model Set {
+  id         Int   @id @default(autoincrement())
+  exerciseId Int
+  reps       Int
+  weight     Float
+  order      Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
 }
 
 enum Gender {
