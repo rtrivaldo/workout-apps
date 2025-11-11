@@ -1,3 +1,118 @@
+==========================================
+PRISMA CLI CHEAT SHEET (MySQL Workflow)
+==========================================
+
+ENVIRONMENT
+------------
+Pastikan DATABASE_URL sudah diatur di file .env
+Contoh:
+DATABASE_URL="mysql://root:password@localhost:3306/db_workout"
+
+
+SCHEMA → DATABASE SYNC
+----------------------
+Sinkronisasi cepat schema ke DB (tanpa migration)
+npx prisma db push
+- Menulis perubahan schema langsung ke DB
+- Tidak membuat file migration
+- Bisa menghapus data jika ada perubahan besar
+- Gunakan hanya untuk testing atau prototyping cepat
+
+
+GENERATE PRISMA CLIENT
+----------------------
+npx prisma generate
+- Regenerasi Prisma Client agar sesuai schema terbaru
+- Jalankan setelah ubah schema, atau setelah migrate
+
+
+RESET DATABASE
+---------------
+npx prisma migrate reset
+- Menghapus semua tabel di DB
+- Menjalankan ulang semua migration dari awal
+- Cocok untuk testing atau reinit database lokal
+- Semua data akan hilang
+
+
+MIGRATION WORKFLOW
+------------------
+Membuat migration pertama (baseline)
+npx prisma migrate dev --name init
+- Membandingkan schema.prisma dengan DB
+- Membuat folder migration (contoh: prisma/migrations/20251111_init)
+- Apply ke DB dan generate Prisma Client
+
+Membuat migration baru setelah ubah schema
+npx prisma migrate dev --name <deskripsi_perubahan>
+Contoh:
+  npx prisma migrate dev --name add_daily_logs_table
+- Prisma generate file SQL migration dan apply ke DB
+
+Hanya buat migration file tanpa apply ke DB
+npx prisma migrate dev --name <desc> --create-only
+- Cocok untuk review migration SQL sebelum dijalankan
+
+
+PRODUCTION DEPLOYMENT
+---------------------
+Apply semua migration existing ke DB production
+npx prisma migrate deploy
+- Tidak membuat migration baru
+- Hanya menjalankan migration yang belum pernah dijalankan
+
+Validasi schema sebelum deploy
+npx prisma validate
+
+
+DATABASE INTROSPECTION
+----------------------
+Generate schema.prisma dari database yang sudah ada
+npx prisma db pull
+
+Lihat diff antara schema dan database
+npx prisma migrate diff --script
+- Menampilkan SQL perbedaan tanpa mengubah database
+
+
+VISUAL TOOL
+------------
+npx prisma studio
+- GUI untuk melihat dan mengedit data di DB development
+
+
+FULL RESET & SEED (OPSIONAL)
+-----------------------------
+npx prisma migrate reset
+- Drop semua tabel
+- Apply ulang semua migration
+- Menjalankan seed script (kalau ada)
+- Hilangkan semua data (gunakan hanya di dev/test)
+
+
+==========================================
+WORKFLOW REKOMENDASI
+==========================================
+
+1. Local Development
+--------------------
+Edit schema.prisma
+npx prisma migrate dev --name <desc>
+npm run dev  # jalankan aplikasi
+
+Kalau perlu reset data:
+npx prisma migrate reset
+
+
+2. CI/CD atau Production
+------------------------
+npx prisma generate
+npx prisma migrate deploy
+npm run build
+npm start
+
+
+3. Quick Prototyping (tanpa migration)
+--------------------------------------
 npx prisma db push
 npx prisma generate
-npm run dev
