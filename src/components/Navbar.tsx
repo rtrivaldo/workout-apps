@@ -19,7 +19,9 @@ export default function Navbar({ name }: { name: string }) {
 
   return (
     <div className='flex justify-between items-center'>
-      <h1 className='text-3xl md:text-4xl font-black'>FitTrack</h1>
+      <Link href='/' className='text-3xl md:text-4xl font-black'>
+        FitTrack
+      </Link>
 
       <div className='flex items-center space-x-2 md:space-x-4'>
         <Avatar asChild className='size-10 md:size-12'>
