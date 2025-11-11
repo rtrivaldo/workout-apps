@@ -23,15 +23,18 @@ export default async function ProfilePage() {
 
           <p>Daily Calorie Needs:</p>
           <p className='font-semibold text-center'>
-            {!res.gender || !res.activityLevel
-              ? 'Please complete your profile to calculate daily calorie needs'
-              : `${calculateDailyCalories(
-                  res.bodyWeight,
-                  res.height,
-                  res.age,
-                  res.gender,
-                  res.activityLevel
-                )} kcal`}
+            {(() => {
+              const calories = calculateDailyCalories(
+                res.bodyWeight,
+                res.height,
+                res.age,
+                res.gender,
+                res.activityLevel
+              );
+              return calories
+                ? `${calories} kcal`
+                : 'Please complete your profile to calculate daily calorie needs';
+            })()}
           </p>
         </div>
 

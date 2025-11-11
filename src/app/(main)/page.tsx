@@ -29,6 +29,7 @@ export default async function Home() {
           title='Diet Plan'
           description='Manage your food intake and diet plan.'
           imageSrc='/images/diet-plan.png'
+          pageUrl='/diet-plan'
           className='bg-[#E1F4E2]'
         />
 
