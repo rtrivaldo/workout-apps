@@ -1,4 +1,4 @@
-import getUserData from '@/actions/auth/profile';
+import { requireCompleteProfile } from '@/actions/auth/profile';
 import DietService from '@/actions/diet/DietService';
 import DietGoalForm from '@/components/diet/DietGoalForm';
 import BackNavigationButton from '@/components/BackNavigationButton';
@@ -6,8 +6,7 @@ import BackNavigationButton from '@/components/BackNavigationButton';
 const dietService = new DietService();
 
 export default async function DietSettingsPage() {
-  const user = await getUserData();
-  if (!user) return null;
+  const user = await requireCompleteProfile();
 
   const todayLog = await dietService.getDailyLog(user.id);
 

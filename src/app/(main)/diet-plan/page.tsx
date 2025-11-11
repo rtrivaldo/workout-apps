@@ -1,4 +1,4 @@
-import getUserData from '@/actions/auth/profile';
+import { requireCompleteProfile } from '@/actions/auth/profile';
 import DietService from '@/actions/diet/DietService';
 import FoodService from '@/actions/diet/FoodService';
 import AddMealDialog from '@/components/diet/AddMealDialog';
@@ -11,8 +11,7 @@ const dietService = new DietService();
 const foodService = new FoodService();
 
 export default async function DietPlanPage() {
-  const user = await getUserData();
-  if (!user) return null;
+  const user = await requireCompleteProfile();
 
   const [dailyLog, foods] = await Promise.all([
     dietService.getDailyLog(user.id),

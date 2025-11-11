@@ -1,4 +1,4 @@
-import getUserData from '@/actions/auth/profile';
+import { requireCompleteProfile } from '@/actions/auth/profile';
 import DietService from '@/actions/diet/DietService';
 import HistoryTable from '@/components/diet/HistoryTable';
 import BackNavigationButton from '@/components/BackNavigationButton';
@@ -6,8 +6,7 @@ import BackNavigationButton from '@/components/BackNavigationButton';
 const dietService = new DietService();
 
 export default async function DietHistoryPage() {
-  const user = await getUserData();
-  if (!user) return null;
+  const user = await requireCompleteProfile();
 
   const logs = await dietService.getHistory(user.id, 30);
 

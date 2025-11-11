@@ -1,4 +1,4 @@
-import getUserData from '@/actions/auth/profile';
+import { requireCompleteProfile } from '@/actions/auth/profile';
 import FoodService from '@/actions/diet/FoodService';
 import BackNavigationButton from '@/components/BackNavigationButton';
 import FoodAddButton from '@/components/diet/FoodAddButton';
@@ -29,8 +29,7 @@ export default async function FoodLibraryManagePage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const user = await getUserData();
-  if (!user) return null;
+  const user = await requireCompleteProfile();
 
   const params = await searchParams;
   const search = typeof params.search === 'string' ? params.search : '';

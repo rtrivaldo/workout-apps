@@ -1,4 +1,4 @@
-import getUserData from '@/actions/auth/profile';
+import { requireCompleteProfile } from '@/actions/auth/profile';
 import ProgressService from '@/actions/diet/ProgressService';
 import LogWeightForm from '@/components/diet/LogWeightForm';
 import ProgressChart from '@/components/diet/ProgressChart';
@@ -7,8 +7,7 @@ import BackNavigationButton from '@/components/BackNavigationButton';
 const progressService = new ProgressService();
 
 export default async function DietProgressPage() {
-  const user = await getUserData();
-  if (!user) return null;
+  const user = await requireCompleteProfile();
 
   const [weightLogs, calorieTrend] = await Promise.all([
     progressService.getWeightProgress(user.id, 14),
