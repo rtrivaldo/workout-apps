@@ -80,88 +80,88 @@ export default function FoodAddButton({
             <DialogTitle>Add Food</DialogTitle>
           </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-3'>
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='flex items-center gap-1'>
-                    Name
-                    <FieldHint message="Food names don't have to be unique. Use serving to describe variants." />
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder='Food name' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className='grid grid-cols-2 gap-3'>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-3'>
               <FormField
                 control={form.control}
-                name='calories'
+                name='name'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='flex items-center gap-1'>
-                      Calories
-                      <FieldHint message='Total kcal per serving.' />
+                      Name
+                      <FieldHint message="Food names don't have to be unique. Use serving to describe variants." />
                     </FormLabel>
                     <FormControl>
-                      <Input type='number' min='0' {...field} />
+                      <Input placeholder='Food name' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='serving'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='flex items-center gap-1'>
-                      Serving
-                      <FieldHint message='Describe the portion, e.g., 100g or 1 slice.' />
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder='e.g. 100g' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className='grid grid-cols-3 gap-3'>
-              {(['protein', 'carbs', 'fat'] as const).map(key => (
+              <div className='grid grid-cols-2 gap-3'>
                 <FormField
-                  key={key}
                   control={form.control}
-                  name={key}
+                  name='calories'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className='flex items-center gap-1 capitalize'>
-                        {key}
-                        <FieldHint message={`Amount of ${key} in grams per serving.`} />
+                      <FormLabel className='flex items-center gap-1'>
+                        Calories
+                        <FieldHint message='Total kcal per serving.' />
                       </FormLabel>
                       <FormControl>
-                        <Input type='number' min='0' step='0.5' {...field} />
+                        <Input type='number' min='0' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              ))}
-            </div>
+                <FormField
+                  control={form.control}
+                  name='serving'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='flex items-center gap-1'>
+                        Serving
+                        <FieldHint message='Describe the portion, e.g., 100g or 1 slice.' />
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder='e.g. 100g' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <Button type='submit' className='w-full' disabled={isPending}>
-              {isPending ? 'Saving...' : 'Save Food'}
-            </Button>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+              <div className='grid grid-cols-3 gap-3'>
+                {(['protein', 'carbs', 'fat'] as const).map(key => (
+                  <FormField
+                    key={key}
+                    control={form.control}
+                    name={key}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className='flex items-center gap-1 capitalize'>
+                          {key}
+                          <FieldHint message={`Amount of ${key} in grams per serving.`} />
+                        </FormLabel>
+                        <FormControl>
+                          <Input type='number' min='0' step='0.5' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
+
+              <Button type='submit' className='w-full' disabled={isPending}>
+                {isPending ? 'Saving...' : 'Save Food'}
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   );
 }
