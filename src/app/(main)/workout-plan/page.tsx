@@ -1,5 +1,6 @@
 import { getWorkoutPlans } from '@/actions/workout/get-workout-plans';
 import { Button } from '@/components/ui/button';
+import WorkoutPlanItem from '@/components/WorkoutPlanItem';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
@@ -34,13 +35,7 @@ export default async function WorkoutPlanPage() {
         {plans.data && plans.data.length > 0 && (
           <div className='space-y-2'>
             {plans.data.map(plan => (
-              <Link
-                key={plan.id}
-                href={`/workout-plan/${plan.id}`}
-                className='block p-4 bg-white rounded-lg'
-              >
-                {plan.title}
-              </Link>
+              <WorkoutPlanItem key={plan.id} plan={plan} />
             ))}
           </div>
         )}

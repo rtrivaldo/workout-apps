@@ -1,7 +1,7 @@
 'use client';
 
-import { addWorkoutPlan } from '@/actions/workout/add-workout-plan';
 import { EditWorkoutPlan } from '@/actions/workout/edit-workout-plan';
+import { EnchancedWorkoutPlan } from '@/app/types/EnchancedWorkoutPlan';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -14,7 +14,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { editWorkoutPlanSchema } from '@/lib/schemas/edit-workout-plan-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { WorkoutPlan } from '@prisma/client';
 import { Loader, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -23,9 +22,6 @@ import { toast } from 'sonner';
 import z from 'zod';
 
 type EditWorkoutPlanValues = z.infer<typeof editWorkoutPlanSchema>;
-type EnchancedWorkoutPlan = WorkoutPlan & {
-  exercises: { name: string; totalSets: number }[];
-};
 
 export default function EditWorkoutPlanForm({
   workoutPlan,
@@ -58,11 +54,11 @@ export default function EditWorkoutPlanForm({
       const result = await EditWorkoutPlan(workoutPlan.id, data);
 
       if (result?.success) {
-        toast.success('Workout plan created successfully!');
+        toast.success('Workout plan updated successfully!');
 
         router.push('/workout-plan');
       } else {
-        toast.error(result?.message || 'Failed to add workout plan.');
+        toast.error(result?.message || 'Failed to update workout plan.');
       }
     } catch (error) {
       toast.error('Something went wrong.');
