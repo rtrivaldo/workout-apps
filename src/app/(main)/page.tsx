@@ -23,6 +23,7 @@ export default async function Home() {
           title='Workout'
           description='Start and track your workouts.'
           imageSrc='/images/workout.png'
+          pageUrl='/workout'
           className='bg-[#FFF4F3]'
         />
 
