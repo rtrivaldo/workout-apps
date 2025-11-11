@@ -9,7 +9,7 @@ CREATE TABLE `User` (
     `bodyWeight` DOUBLE NOT NULL COMMENT 'Berat badan terakhir user (kg)',
     `height` DOUBLE NOT NULL COMMENT 'Tinggi badan user (cm)',
     `fitnessGoal` ENUM('LOSE_WEIGHT', 'GAIN_WEIGHT', 'MAINTAIN_WEIGHT') NOT NULL COMMENT 'Tujuan kebugaran',
-    `activityLevel` ENUM('NOT_VERY_ACTIVE', 'LIGHTLY_ACTIVE', 'ACTIVE', 'VERY_ACTIVE') NULL DEFAULT 'LIGHTLY_ACTIVE' COMMENT 'Level aktivitas harian',
+    `activityLevel` ENUM('NOT_VERY_ACTIVE', 'LIGHTLY_ACTIVE', 'ACTIVE', 'VERY_ACTIVE') NULL COMMENT 'Level aktivitas harian',
     `targetWeight` DOUBLE NULL COMMENT 'Target berat badan user (kg)',
     `lastCalculatedTdee` DOUBLE NULL COMMENT 'Cache hasil perhitungan TDEE terakhir',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT 'Tanggal pembuatan data',

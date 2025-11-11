@@ -55,7 +55,6 @@ npx prisma migrate dev --name <desc> --create-only
 
 contoh
 - npx prisma migrate dev --name update_mealfood_snapshot --create-only
-- 
 
 
 PRODUCTION DEPLOYMENT
