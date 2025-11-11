@@ -114,15 +114,21 @@ model Meal {
 model MealFood {
   id        Int      @id @default(autoincrement())
   mealId    Int
-  foodId    Int
+  foodId    Int?
   portion   Float    @default(1)
   totalCal  Float    @default(0)
+  caloriesSnapshot Float
+  proteinSnapshot  Float @default(0)
+  fatSnapshot      Float @default(0)
+  carbsSnapshot    Float @default(0)
+  servingSnapshot  String @default("1 serving")
+  foodNameSnapshot String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   meal      Meal     @relation(fields: [mealId], references: [id])
-  food      Food     @relation(fields: [foodId], references: [id])
+  food      Food?    @relation(fields: [foodId], references: [id], onDelete: SetNull)
 }
 
 model WeightLog {

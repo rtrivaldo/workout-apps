@@ -53,6 +53,10 @@ Hanya buat migration file tanpa apply ke DB
 npx prisma migrate dev --name <desc> --create-only
 - Cocok untuk review migration SQL sebelum dijalankan
 
+contoh
+- npx prisma migrate dev --name update_mealfood_snapshot --create-only
+- 
+
 
 PRODUCTION DEPLOYMENT
 ---------------------
