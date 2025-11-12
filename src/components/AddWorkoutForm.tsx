@@ -109,12 +109,10 @@ export default function AddWorkoutForm({
 
     const res = await addWorkout(payload);
 
-    console.log(res);
-
     if (res?.success) {
       toast.success('Workout added successfully!');
 
-      router.push('/');
+      router.push('/workout-history');
     } else {
       toast.error('Failed to add workout plan.');
     }
