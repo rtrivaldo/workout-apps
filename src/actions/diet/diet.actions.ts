@@ -4,10 +4,9 @@ import { getSession } from "@/lib/auth";
 import {
   addFoodSchema,
   addMealSchema,
-  logWeightSchema,
   updateFoodSchema,
-  updateDietGoalSchema,
   deleteFoodSchema,
+  dailyCheckInSchema,
 } from "@/lib/schemas/diet";
 import { revalidatePath } from "next/cache";
 import z from "zod";
@@ -42,8 +41,7 @@ export async function addMealAction(input: z.infer<typeof addMealSchema>) {
     });
 
     revalidatePath("/diet-plan");
-    revalidatePath("/diet-plan/history");
-    revalidatePath("/diet-plan/progress");
+    revalidatePath("/diet-plan/insights");
     return { success: true, status: 200, message: "Meal logged successfully" };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -67,6 +65,7 @@ export async function addFoodAction(input: z.infer<typeof addFoodSchema>) {
     await foodService.addCustomFood(userId, parsed);
     revalidatePath("/diet-plan");
     revalidatePath("/diet-plan/foods");
+    revalidatePath("/diet-plan/insights");
 
     return { success: true, status: 201, message: "Food added successfully" };
   } catch (error) {
@@ -94,6 +93,7 @@ export async function updateFoodAction(
     await foodService.updateFood(userId, parsed.id, parsed);
     revalidatePath("/diet-plan");
     revalidatePath("/diet-plan/foods");
+    revalidatePath("/diet-plan/insights");
 
     return { success: true, status: 200, message: "Food updated successfully" };
   } catch (error) {
@@ -121,6 +121,7 @@ export async function deleteFoodAction(
     await foodService.deleteFood(userId, parsed.id);
     revalidatePath("/diet-plan");
     revalidatePath("/diet-plan/foods");
+    revalidatePath("/diet-plan/insights");
 
     return { success: true, status: 200, message: "Food deleted successfully" };
   } catch (error) {
@@ -138,57 +139,65 @@ export async function deleteFoodAction(
   }
 }
 
-export async function updateDietGoalAction(
-  input: z.infer<typeof updateDietGoalSchema>
+export async function dailyCheckInAction(
+  input: z.infer<typeof dailyCheckInSchema>
 ) {
   try {
     const userId = await getUserId();
-    const parsed = updateDietGoalSchema.parse(input);
+    const parsed = dailyCheckInSchema.parse(input);
 
-    await dietService.updateGoal(userId, parsed);
-    revalidatePath("/diet-plan/settings");
-    revalidatePath("/diet-plan");
+    const goalPayload: {
+      targetWeight?: number | null;
+      manualCalorieTarget?: number | null;
+      fitnessGoal?: z.infer<typeof dailyCheckInSchema>["fitnessGoal"];
+    } = {};
 
-    return { success: true, status: 200, message: "Goal updated successfully" };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        status: 400,
-        message: "Invalid goal input",
-        errors: error.flatten().fieldErrors,
-      };
+    if (parsed.targetWeight !== undefined) {
+      goalPayload.targetWeight = parsed.targetWeight;
+    }
+    if (parsed.manualCalorieTarget !== undefined) {
+      goalPayload.manualCalorieTarget = parsed.manualCalorieTarget;
+    }
+    if (parsed.fitnessGoal !== undefined) {
+      goalPayload.fitnessGoal = parsed.fitnessGoal;
     }
 
-    console.error("[updateDietGoalAction]", error);
-    return { success: false, status: 500, message: "Failed to update goal" };
-  }
-}
+    let didUpdateGoal = false;
+    if (
+      goalPayload.targetWeight !== undefined ||
+      goalPayload.manualCalorieTarget !== undefined ||
+      goalPayload.fitnessGoal !== undefined
+    ) {
+      await dietService.updateGoal(userId, goalPayload);
+      didUpdateGoal = true;
+    }
 
-export async function logWeightAction(input: z.infer<typeof logWeightSchema>) {
-  try {
-    const userId = await getUserId();
-    const parsed = logWeightSchema.parse(input);
-    await progressService.addWeightLog(userId, parsed.weight, parsed.date);
-    revalidatePath("/diet-plan/progress");
-    revalidatePath("/diet-plan/history");
+    await progressService.addWeightLog(userId, parsed.weight);
+    await dietService.recalculateCalories(userId);
+
+    revalidatePath("/diet-plan");
+    revalidatePath("/diet-plan/insights");
 
     return {
       success: true,
       status: 200,
-      message: "Weight logged successfully",
+      message: "Daily check-in saved",
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
         status: 400,
-        message: "Invalid weight input",
+        message: "Invalid check-in input",
         errors: error.flatten().fieldErrors,
       };
     }
 
-    console.error("[logWeightAction]", error);
-    return { success: false, status: 500, message: "Failed to log weight" };
+    console.error("[dailyCheckInAction]", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to save daily check-in",
+    };
   }
 }

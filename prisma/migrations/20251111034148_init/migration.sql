@@ -102,19 +102,6 @@ CREATE TABLE `MealFood` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
-CREATE TABLE `WeightLog` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT COMMENT 'Primary ID weight log',
-    `userId` INTEGER NOT NULL COMMENT 'Relasi ke user',
-    `weight` DOUBLE NOT NULL COMMENT 'Berat badan yang dicatat (kg)',
-    `loggedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT 'Tanggal pencatatan berat',
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT 'Tanggal pembuatan baris',
-    `updatedAt` DATETIME(3) NOT NULL COMMENT 'Tanggal update baris',
-
-    UNIQUE INDEX `WeightLog_userId_loggedAt_key`(`userId`, `loggedAt`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- AddForeignKey
 ALTER TABLE `WorkoutPlan` ADD CONSTRAINT `WorkoutPlan_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -135,6 +122,3 @@ ALTER TABLE `MealFood` ADD CONSTRAINT `MealFood_mealId_fkey` FOREIGN KEY (`mealI
 
 -- AddForeignKey
 ALTER TABLE `MealFood` ADD CONSTRAINT `MealFood_foodId_fkey` FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `WeightLog` ADD CONSTRAINT `WeightLog_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

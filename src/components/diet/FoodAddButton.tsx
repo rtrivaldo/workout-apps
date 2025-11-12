@@ -2,7 +2,7 @@
 
 import { addFoodAction } from '@/actions/diet/diet.actions';
 import { addFoodSchema } from '@/lib/schemas/diet';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { typedZodResolver } from '@/lib/typed-zod-resolver';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -38,7 +38,7 @@ export default function FoodAddButton({
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<AddFoodValues>({
-    resolver: zodResolver(addFoodSchema),
+    resolver: typedZodResolver(addFoodSchema),
     defaultValues: {
       name: '',
       calories: 0,

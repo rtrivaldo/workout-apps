@@ -1,5 +1,8 @@
 import prisma from "@/lib/prisma";
-import { calculateDailyCalories } from "@/lib/utils";
+import {
+  calculateDailyCalories,
+  calculateGoalCalorieTarget,
+} from "@/lib/utils";
 import { ActivityLevel, MealType, PrismaClient, User } from "@prisma/client";
 import FoodService from "./FoodService";
 
@@ -55,6 +58,11 @@ export default class DietService {
     );
   }
 
+  private calculateGoalCalories(user: User, tdee: number | null) {
+    const baseline = tdee ?? user.lastCalculatedTdee;
+    return calculateGoalCalorieTarget(baseline ?? null, user.fitnessGoal);
+  }
+
   private async ensureDailyLog(userId: number, date: Date) {
     let log = await this.db.dailyLog.findUnique({
       where: { userId_date: { userId, date } },
@@ -75,13 +83,20 @@ export default class DietService {
 
     const user = await this.getUser(userId);
     const dailyNeedCalories = this.calculateTdee(user);
+    const computedGoalCalories = this.calculateGoalCalories(
+      user,
+      dailyNeedCalories
+    );
+    const goalCalories = computedGoalCalories ?? user.lastGoalCalories ?? null;
 
     log = await this.db.dailyLog.create({
       data: {
         userId,
         date,
         dailyNeedCalories: dailyNeedCalories ?? user.lastCalculatedTdee,
+        goalCalorieTarget: goalCalories,
         targetWeight: user.targetWeight,
+        currentWeight: user.bodyWeight ?? null,
       },
       include: {
         meals: {
@@ -94,10 +109,21 @@ export default class DietService {
       },
     });
 
-    if (dailyNeedCalories) {
+    if (dailyNeedCalories || computedGoalCalories) {
+      const userUpdateData: {
+        lastCalculatedTdee?: number;
+        lastGoalCalories?: number;
+      } = {};
+      if (dailyNeedCalories) {
+        userUpdateData.lastCalculatedTdee = dailyNeedCalories;
+      }
+      if (computedGoalCalories) {
+        userUpdateData.lastGoalCalories = computedGoalCalories;
+      }
+
       await this.db.user.update({
         where: { id: userId },
-        data: { lastCalculatedTdee: dailyNeedCalories },
+        data: userUpdateData,
       });
     }
 
@@ -236,6 +262,11 @@ export default class DietService {
   ) {
     const user = await this.getUser(userId);
     const dailyTdee = this.calculateTdee(user);
+    const computedGoalCalories = calculateGoalCalorieTarget(
+      dailyTdee ?? user.lastCalculatedTdee ?? null,
+      input.fitnessGoal ?? user.fitnessGoal
+    );
+    const goalCalories = computedGoalCalories ?? user.lastGoalCalories ?? null;
 
     const updatedUser = await this.db.user.update({
       where: { id: userId },
@@ -243,6 +274,7 @@ export default class DietService {
         targetWeight: input.targetWeight ?? user.targetWeight,
         fitnessGoal: input.fitnessGoal ?? user.fitnessGoal,
         lastCalculatedTdee: dailyTdee ?? user.lastCalculatedTdee,
+        lastGoalCalories: goalCalories,
       },
     });
 
@@ -258,12 +290,14 @@ export default class DietService {
         where: { userId_date: { userId, date: today } },
         update: {
           manualCalorieTarget: manualTarget ?? undefined,
+          goalCalorieTarget: goalCalories ?? undefined,
           targetWeight: targetWeightValue ?? undefined,
         },
         create: {
           userId,
           date: today,
           manualCalorieTarget: manualTarget,
+          goalCalorieTarget: goalCalories ?? undefined,
           targetWeight: targetWeightValue,
           dailyNeedCalories: dailyTdee ?? user.lastCalculatedTdee,
         },

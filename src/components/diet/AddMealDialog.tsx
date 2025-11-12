@@ -2,7 +2,7 @@
 
 import { addMealAction } from '@/actions/diet/diet.actions';
 import { mealTypeOptions, addMealSchema } from '@/lib/schemas/diet';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { typedZodResolver } from '@/lib/typed-zod-resolver';
 import { Plus, Trash2 } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -41,7 +41,7 @@ export default function AddMealDialog({ foods }: { foods: FoodOption[] }) {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<AddMealFormValues>({
-    resolver: zodResolver(addMealSchema),
+    resolver: typedZodResolver(addMealSchema),
     defaultValues: {
       mealType: 'BREAKFAST',
       items: [{ foodId: foods[0]?.id ?? 0, portion: 1 }],

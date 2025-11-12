@@ -5,7 +5,7 @@ import {
   updateFoodAction,
 } from '@/actions/diet/diet.actions';
 import { updateFoodSchema } from '@/lib/schemas/diet';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { typedZodResolver } from '@/lib/typed-zod-resolver';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -49,7 +49,7 @@ export default function FoodRowActions({ food }: { food: FoodItem }) {
   const [isDeleting, startDeleteTransition] = useTransition();
 
   const form = useForm<FoodFormValues>({
-    resolver: zodResolver(updateFoodSchema),
+    resolver: typedZodResolver(updateFoodSchema),
     defaultValues: {
       id: food.id,
       name: food.name,
