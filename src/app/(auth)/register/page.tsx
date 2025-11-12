@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { toast } from 'sonner';
-import { Check, ChevronsUpDown, Loader } from 'lucide-react';
+import { Check, ChevronsUpDown, Eye, EyeOff, Loader } from 'lucide-react';
 import { registerUser } from '@/actions/auth/register';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -41,6 +41,7 @@ export default function RegisterPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isView, setIsView] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(registerSchema),
@@ -196,9 +197,9 @@ export default function RegisterPage() {
                           >
                             {form.watch('fitnessGoal')
                               ? fitnessGoals.find(
-                                goal =>
-                                  goal.value === form.watch('fitnessGoal')
-                              )?.label
+                                  goal =>
+                                    goal.value === form.watch('fitnessGoal')
+                                )?.label
                               : 'Choose you goal'}
                             <ChevronsUpDown className='opacity-50' />
                           </Button>
@@ -251,11 +252,26 @@ export default function RegisterPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder='Enter password'
-                        type='password'
-                        {...field}
-                      />
+                      <div className='relative'>
+                        <Input
+                          placeholder='Enter password'
+                          type={isView ? 'text' : 'password'}
+                          {...field}
+                        />
+                        {isView ? (
+                          <Eye
+                            className='size-4 absolute right-3 top-2.75 z-10 cursor-pointer text-gray-500'
+                            onClick={() => {
+                              setIsView(!isView), console.log(isView);
+                            }}
+                          />
+                        ) : (
+                          <EyeOff
+                            className='size-4 absolute right-3 top-2.75 z-10 cursor-pointer text-gray-500'
+                            onClick={() => setIsView(!isView)}
+                          />
+                        )}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
