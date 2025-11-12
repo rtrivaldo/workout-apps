@@ -28,6 +28,14 @@ export default async function Home() {
         />
 
         <DashboardMenuCard
+          title='Workout History'
+          description='Review your past workouts.'
+          imageSrc='/images/history.png'
+          pageUrl='/workout-history'
+          className='bg-[#FFF5DF]'
+        />
+
+        <DashboardMenuCard
           title='Diet Plan'
           description='Manage your food intake and diet plan.'
           imageSrc='/images/diet-plan.png'
@@ -40,13 +48,6 @@ export default async function Home() {
           description='Record and monitor your health progress.'
           imageSrc='/images/progress.png'
           className='bg-[#FDF0FF]'
-        />
-
-        <DashboardMenuCard
-          title='Calorie'
-          description='View your summary and calorie count.'
-          imageSrc='/images/calorie.png'
-          className='bg-[#FFF5DF]'
         />
       </div>
     </div>
