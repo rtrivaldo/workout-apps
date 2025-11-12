@@ -33,15 +33,13 @@ export default async function FoodLibraryManagePage({
 
   const params = await searchParams;
   const search = typeof params.search === 'string' ? params.search : '';
-  const sourceParam =
-    typeof params.source === 'string' ? params.source : 'all';
+  const sourceParam = typeof params.source === 'string' ? params.source : 'all';
   const source =
     sourceParam === 'catalog' || sourceParam === 'personal'
       ? sourceParam
       : 'all';
 
-  const pageParam =
-    typeof params.page === 'string' ? Number(params.page) : 1;
+  const pageParam = typeof params.page === 'string' ? Number(params.page) : 1;
   const page = Number.isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
   const skip = (page - 1) * PAGE_SIZE;
 
@@ -72,7 +70,11 @@ export default async function FoodLibraryManagePage({
     <div className='mt-6 p-6 md:p-10 bg-[#F4F6F6] rounded-2xl space-y-6'>
       <div className='flex flex-col gap-2 md:flex-row md:items-center md:justify-between'>
         <div>
-          <BackNavigationButton className='mb-1' fallbackHref='/diet-plan' label='Back to Diet Plan' />
+          <BackNavigationButton
+            className='mb-1'
+            fallbackHref='/diet-plan'
+            label='Back to Diet Plan'
+          />
           <h2 className='text-2xl font-semibold'>Manage Food Library</h2>
           <p className='text-sm text-[#A9A9A9]'>
             View, search, and maintain your food library.
@@ -91,6 +93,7 @@ export default async function FoodLibraryManagePage({
           defaultValue={search}
         />
         <select
+          title='source'
           name='source'
           defaultValue={source}
           className='border rounded-md px-3 py-2 bg-white text-sm'
@@ -129,8 +132,10 @@ export default async function FoodLibraryManagePage({
                           <Info className='h-4 w-4 text-neutral-400 cursor-pointer' />
                         </TooltipTrigger>
                         <TooltipContent className='w-60 text-xs text-white bg-neutral-900'>
-                          <span className='font-semibold'>Catalog</span> items come from the system.
-                          <span className='font-semibold'> Personal</span> items are created by you and can be edited or deleted.
+                          <span className='font-semibold'>Catalog</span> items
+                          come from the system.
+                          <span className='font-semibold'> Personal</span> items
+                          are created by you and can be edited or deleted.
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -144,7 +149,9 @@ export default async function FoodLibraryManagePage({
                   const isPersonal = Boolean(food.createdBy);
                   return (
                     <tr key={food.id} className='border-t'>
-                      <td className='py-2 px-2 text-neutral-500 whitespace-nowrap'>{rowNumber}</td>
+                      <td className='py-2 px-2 text-neutral-500 whitespace-nowrap'>
+                        {rowNumber}
+                      </td>
                       <td className='py-2 px-2'>{food.name}</td>
                       <td className='py-2 px-2'>
                         <div className='max-w-[200px] break-words leading-snug'>
@@ -183,7 +190,10 @@ export default async function FoodLibraryManagePage({
                 })}
                 {foods.length === 0 && (
                   <tr>
-                    <td className='py-6 text-center text-neutral-500' colSpan={7}>
+                    <td
+                      className='py-6 text-center text-neutral-500'
+                      colSpan={7}
+                    >
                       No foods found.
                     </td>
                   </tr>
@@ -204,7 +214,9 @@ export default async function FoodLibraryManagePage({
                   <div className='flex items-start justify-between gap-3'>
                     <div>
                       <p className='text-xs text-neutral-500'>#{rowNumber}</p>
-                      <p className='font-semibold text-neutral-900'>{food.name}</p>
+                      <p className='font-semibold text-neutral-900'>
+                        {food.name}
+                      </p>
                       <span
                         className={cn(
                           'mt-1 inline-flex items-center text-xs px-2 py-0.5 rounded-full',
@@ -220,17 +232,23 @@ export default async function FoodLibraryManagePage({
                   </div>
                   <dl className='grid grid-cols-2 gap-3 text-sm text-neutral-600'>
                     <div>
-                      <dt className='text-xs uppercase tracking-wide text-neutral-500'>Serving</dt>
+                      <dt className='text-xs uppercase tracking-wide text-neutral-500'>
+                        Serving
+                      </dt>
                       <dd className='text-neutral-900 break-words leading-snug'>
                         {food.serving}
                       </dd>
                     </div>
                     <div>
-                      <dt className='text-xs uppercase tracking-wide text-neutral-500'>Calories</dt>
+                      <dt className='text-xs uppercase tracking-wide text-neutral-500'>
+                        Calories
+                      </dt>
                       <dd className='text-neutral-900'>{food.calories} kcal</dd>
                     </div>
                     <div className='col-span-2'>
-                      <dt className='text-xs uppercase tracking-wide text-neutral-500'>Macros</dt>
+                      <dt className='text-xs uppercase tracking-wide text-neutral-500'>
+                        Macros
+                      </dt>
                       <dd className='text-neutral-900'>
                         P {food.protein}g / C {food.carbs}g / F {food.fat}g
                       </dd>
