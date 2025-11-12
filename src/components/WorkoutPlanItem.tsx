@@ -60,14 +60,14 @@ export default function WorkoutPlanItem({
       </Link>
 
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <Button variant='ghost'>
             <Ellipsis />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
           <DropdownMenuItem>
-            <Link href={'/workout'}>Start this workout</Link>
+            <Link href={`/workout?plan=${plan.id}`}>Start this workout</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={`/workout-plan/${plan.id}`}>Edit</Link>
