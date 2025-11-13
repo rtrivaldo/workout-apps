@@ -1,4 +1,4 @@
-import { ActivityLevel, Gender } from "@prisma/client";
+import { ActivityLevel, FitnessGoal, Gender } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -40,26 +40,53 @@ export function calculateDailyCalories(
     return null;
   }
 
-  const activityFactors = {
+  const activityFactors: Partial<Record<ActivityLevel, number>> = {
     NOT_VERY_ACTIVE: 1.2,
     LIGHTLY_ACTIVE: 1.375,
     ACTIVE: 1.55,
     VERY_ACTIVE: 1.725,
-  } as Record<ActivityLevel, number>;
+  };
 
-  const factor = activityFactors[activityLevel];
+  const factor = activityLevel ? activityFactors[activityLevel] : undefined;
   if (!factor) return null;
 
   const dailyCalories = bmr * factor;
   return Math.round(dailyCalories);
 }
 
+const MIN_GOAL_CALORIES = 1000;
+const MAX_GOAL_CALORIES = 6000;
+
+export function calculateGoalCalorieTarget(
+  tdee: number | null | undefined,
+  fitnessGoal?: FitnessGoal | null
+) {
+  if (!tdee || !fitnessGoal) return null;
+
+  let adjustment = 0;
+  switch (fitnessGoal) {
+    case "LOSE_WEIGHT":
+      adjustment = -500;
+      break;
+    case "GAIN_WEIGHT":
+      adjustment = 300;
+      break;
+    default:
+      adjustment = 0;
+  }
+
+  const raw = tdee + adjustment;
+  const clamped = Math.min(MAX_GOAL_CALORIES, Math.max(MIN_GOAL_CALORIES, raw));
+
+  return Math.round(clamped);
+}
+
 export function getCurrentDateTimeLocal() {
   const now = new Date();
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }

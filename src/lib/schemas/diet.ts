@@ -50,37 +50,20 @@ export const addMealSchema = z.object({
     .min(1, { message: "At least one food item is required" }),
 });
 
+export const updateMealSchema = addMealSchema.extend({
+  mealId: z.coerce.number({ message: "Meal id is required" }).int().positive(),
+});
+
+export const deleteMealSchema = z.object({
+  mealId: z.coerce.number({ message: "Meal id is required" }).int().positive(),
+});
+
 const optionalNumber = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess(
     (value) =>
       value === "" || value === null || value === undefined ? undefined : value,
     schema.optional()
   );
-
-export const updateDietGoalSchema = z.object({
-  targetWeight: optionalNumber(
-    z.coerce
-      .number({ message: "Target weight must be a number" })
-      .positive({ message: "Target weight must be greater than 0" })
-  ),
-  manualCalorieTarget: optionalNumber(
-    z.coerce
-      .number({ message: "Manual calorie target must be a number" })
-      .min(800, { message: "Calorie target is too low" })
-      .max(6000, { message: "Calorie target is too high" })
-  ),
-  fitnessGoal: z
-    .enum(["LOSE_WEIGHT", "GAIN_WEIGHT", "MAINTAIN_WEIGHT"])
-    .optional(),
-});
-
-export const logWeightSchema = z.object({
-  weight: z.coerce
-    .number({ message: "Weight must be a number" })
-    .min(20)
-    .max(400),
-  date: z.string().optional(),
-});
 
 export const updateFoodSchema = addFoodSchema.extend({
   id: z.number({ message: "Food id is required" }).int().positive(),
@@ -89,3 +72,71 @@ export const updateFoodSchema = addFoodSchema.extend({
 export const deleteFoodSchema = z.object({
   id: z.number({ message: "Food id is required" }).int().positive(),
 });
+
+export const dailyCheckInSchema = z
+  .object({
+    targetWeight: optionalNumber(
+      z.coerce
+        .number({ message: "Target weight must be a number" })
+        .positive({ message: "Target weight must be greater than 0" })
+    ),
+    manualCalorieTarget: optionalNumber(
+      z.coerce
+        .number({ message: "Manual calorie target must be a number" })
+        .min(800, { message: "Calorie target is too low" })
+        .max(6000, { message: "Calorie target is too high" })
+    ),
+    fitnessGoal: z
+      .enum(["LOSE_WEIGHT", "GAIN_WEIGHT", "MAINTAIN_WEIGHT"])
+      .optional(),
+    weight: z.coerce
+      .number({ message: "Weight must be a number" })
+      .min(20)
+      .max(400),
+  })
+  .superRefine((data, ctx) => {
+    const tolerance = 0.1;
+    const target = data.targetWeight;
+    const currentWeight = data.weight;
+
+    if (target === undefined || target === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetWeight"],
+        message: "Target weight is required for your selected goal",
+      });
+    }
+
+    if (target === undefined || target === null) {
+      return;
+    }
+
+    if (data.fitnessGoal === "LOSE_WEIGHT" && target >= currentWeight) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetWeight"],
+        message:
+          "Target weight must be lower than today’s weight for a lose goal",
+      });
+    }
+
+    if (data.fitnessGoal === "GAIN_WEIGHT" && target <= currentWeight) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetWeight"],
+        message:
+          "Target weight must be higher than today’s weight for a gain goal",
+      });
+    }
+
+    if (
+      data.fitnessGoal === "MAINTAIN_WEIGHT" &&
+      Math.abs(target - currentWeight) > tolerance
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetWeight"],
+        message: "For maintain goal, target weight should match today’s weight",
+      });
+    }
+  });

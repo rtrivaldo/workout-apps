@@ -41,7 +41,7 @@ export default function UpdateProfileForm({ user }: { user: User }) {
   const [openGender, setOpenGender] = useState(false);
   const [openActivityLevel, setOpenActivityLevel] = useState(false);
 
-  const form = useForm({
+  const form = useForm<any>({
     resolver: zodResolver(updateProfileSchema) as any,
     defaultValues: {
       name: user.name || '',
@@ -224,9 +224,9 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                           >
                             {form.watch('activityLevel')
                               ? activityLevels.find(
-                                  level =>
-                                    level.value === form.watch('activityLevel')
-                                )?.label
+                                level =>
+                                  level.value === form.watch('activityLevel')
+                              )?.label
                               : 'Choose you activity level'}
                             <ChevronsUpDown className='opacity-50' />
                           </Button>

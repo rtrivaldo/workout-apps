@@ -8,16 +8,24 @@ type Props = {
   className?: string;
   label?: string;
   fallbackHref?: string;
+  useHistoryBack?: boolean;
 };
 
 export default function BackNavigationButton({
   className,
   label = 'Back',
   fallbackHref = '/',
+  useHistoryBack = false,
 }: Props) {
   const router = useRouter();
 
   const handleClick = () => {
+    if (useHistoryBack && typeof window !== 'undefined') {
+      if (window.history.length > 1) {
+        router.back();
+        return;
+      }
+    }
     router.push(fallbackHref);
   };
 

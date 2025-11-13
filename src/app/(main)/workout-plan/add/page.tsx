@@ -13,6 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { addWorkoutPlanSchema } from '@/lib/schemas/add-workout-plan-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+// import { typedZodResolver } from '@/lib/typed-zod-resolver';
 import { Loader, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -28,6 +29,7 @@ export default function AddWorkoutPlanPage() {
 
   const form = useForm<AddWorkoutPlanValues>({
     resolver: zodResolver(addWorkoutPlanSchema),
+    // resolver: typedZodResolver(addWorkoutPlanSchema),
     defaultValues: {
       title: '',
       exercises: [{ name: '', totalSets: 1 }],

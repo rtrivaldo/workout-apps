@@ -1,5 +1,7 @@
 import prisma from "@/lib/prisma";
-import { PrismaClient } from "@prisma/client";
+import { DailyLog, PrismaClient } from "@prisma/client";
+
+export type WeightTrendLog = Pick<DailyLog, "id" | "date" | "currentWeight">;
 
 export default class ProgressService {
   constructor(private readonly db: PrismaClient = prisma) {}
@@ -11,55 +13,8 @@ export default class ProgressService {
     );
   }
 
-  async getWeightProgress(userId: number, rangeInDays = 14) {
-    const today = this.normalizeDate();
-    const fromDate = new Date(today);
-    fromDate.setUTCDate(today.getUTCDate() - rangeInDays);
-
-    return this.db.weightLog.findMany({
-      where: {
-        userId,
-        loggedAt: {
-          gte: fromDate,
-        },
-      },
-      orderBy: { loggedAt: "asc" },
-    });
-  }
-
-  async getCalorieTrend(userId: number, rangeInDays = 14) {
-    const today = this.normalizeDate();
-    const fromDate = new Date(today);
-    fromDate.setUTCDate(today.getUTCDate() - rangeInDays);
-
-    return this.db.dailyLog.findMany({
-      where: {
-        userId,
-        date: {
-          gte: fromDate,
-        },
-      },
-      orderBy: { date: "asc" },
-    });
-  }
-
   async addWeightLog(userId: number, weight: number, date?: Date | string) {
     const loggedAt = this.normalizeDate(date);
-
-    await this.db.weightLog.upsert({
-      where: {
-        userId_loggedAt: {
-          userId,
-          loggedAt,
-        },
-      },
-      update: { weight },
-      create: {
-        userId,
-        weight,
-        loggedAt,
-      },
-    });
 
     await this.db.dailyLog.upsert({
       where: { userId_date: { userId, date: loggedAt } },
@@ -69,6 +24,11 @@ export default class ProgressService {
         date: loggedAt,
         currentWeight: weight,
       },
+    });
+
+    await this.db.user.update({
+      where: { id: userId },
+      data: { bodyWeight: weight },
     });
   }
 }
