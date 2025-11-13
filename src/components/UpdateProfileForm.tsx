@@ -33,8 +33,6 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 
-type UpdateProfileFormValues = z.infer<typeof updateProfileSchema>;
-
 export default function UpdateProfileForm({ user }: { user: User }) {
   const router = useRouter();
 
@@ -60,7 +58,7 @@ export default function UpdateProfileForm({ user }: { user: User }) {
   const fitnessGoal = form.watch('fitnessGoal');
   const requiresTargetWeight = fitnessGoal !== 'MAINTAIN_WEIGHT';
 
-  const onSubmit = async (data: UpdateProfileFormValues) => {
+  const onSubmit = async (data: any) => {
     setIsLoading(true);
 
     const formData = new FormData();
@@ -143,8 +141,9 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                             className='justify-between'
                           >
                             {form.watch('gender')
-                              ? genders.find(g => g.value === form.watch('gender'))
-                                ?.label
+                              ? genders.find(
+                                  g => g.value === form.watch('gender')
+                                )?.label
                               : 'Select your gender'}
                             <ChevronsUpDown className='opacity-50' />
                           </Button>
@@ -202,7 +201,8 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                             <Info className='h-4 w-4 text-neutral-400' />
                           </TooltipTrigger>
                           <TooltipContent className='text-xs'>
-                            Include daily movement plus workouts to pick the closest match.
+                            Include daily movement plus workouts to pick the
+                            closest match.
                           </TooltipContent>
                         </Tooltip>
                       </span>
@@ -242,7 +242,8 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                                     onSelect={currentValue => {
                                       form.setValue(
                                         'activityLevel',
-                                        currentValue === form.watch('activityLevel')
+                                        currentValue ===
+                                          form.watch('activityLevel')
                                           ? undefined!
                                           : (currentValue as ActivityLevel)
                                       );
@@ -253,7 +254,8 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                                     <Check
                                       className={cn(
                                         'ml-auto',
-                                        form.watch('activityLevel') === level.value
+                                        form.watch('activityLevel') ===
+                                          level.value
                                           ? 'opacity-100'
                                           : 'opacity-0'
                                       )}
@@ -349,8 +351,8 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                           </TooltipTrigger>
                           <TooltipContent className='max-w-xs text-xs'>
                             Choose lose or gain if you want to specify a target
-                            weight. Maintain keeps your goal equal to your current
-                            weight.
+                            weight. Maintain keeps your goal equal to your
+                            current weight.
                           </TooltipContent>
                         </Tooltip>
                       </span>
@@ -372,8 +374,9 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                           >
                             {form.watch('fitnessGoal')
                               ? fitnessGoals.find(
-                                goal => goal.value === form.watch('fitnessGoal')
-                              )?.label
+                                  goal =>
+                                    goal.value === form.watch('fitnessGoal')
+                                )?.label
                               : 'Choose you goal'}
                             <ChevronsUpDown className='opacity-50' />
                           </Button>
@@ -389,7 +392,8 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                                     onSelect={currentValue => {
                                       form.setValue(
                                         'fitnessGoal',
-                                        currentValue === form.watch('fitnessGoal')
+                                        currentValue ===
+                                          form.watch('fitnessGoal')
                                           ? undefined!
                                           : (currentValue as FitnessGoal)
                                       );
@@ -440,7 +444,11 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                               max='300'
                               placeholder='Enter target weight'
                               {...field}
-                              value={field.value === undefined ? '' : String(field.value)}
+                              value={
+                                field.value === undefined
+                                  ? ''
+                                  : String(field.value)
+                              }
                             />
                           </FormControl>
                           <FormMessage />
@@ -449,7 +457,9 @@ export default function UpdateProfileForm({ user }: { user: User }) {
                     />
                   </>
                 ) : (
-                  <p>Maintaining goal uses your current weight as the target.</p>
+                  <p>
+                    Maintaining goal uses your current weight as the target.
+                  </p>
                 )}
               </div>
             </div>

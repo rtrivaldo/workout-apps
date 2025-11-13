@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { toast } from 'sonner';
-import { Loader } from 'lucide-react';
+import { Eye, EyeOff, Loader } from 'lucide-react';
 import { login } from '@/actions/auth/login';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -27,6 +27,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isView, setIsView] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -95,7 +96,26 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type='password' placeholder='Password' {...field} />
+                    <div className='relative'>
+                      <Input
+                        type={isView ? 'text' : 'password'}
+                        placeholder='Password'
+                        {...field}
+                      />
+                      {isView ? (
+                        <Eye
+                          className='size-4 absolute right-3 top-2.75 z-10 cursor-pointer text-gray-500'
+                          onClick={() => {
+                            setIsView(!isView), console.log(isView);
+                          }}
+                        />
+                      ) : (
+                        <EyeOff
+                          className='size-4 absolute right-3 top-2.75 z-10 cursor-pointer text-gray-500'
+                          onClick={() => setIsView(!isView)}
+                        />
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
