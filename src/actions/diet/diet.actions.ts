@@ -7,6 +7,8 @@ import {
   updateFoodSchema,
   deleteFoodSchema,
   dailyCheckInSchema,
+  updateMealSchema,
+  deleteMealSchema,
 } from "@/lib/schemas/diet";
 import { revalidatePath } from "next/cache";
 import z from "zod";
@@ -54,6 +56,63 @@ export async function addMealAction(input: z.infer<typeof addMealSchema>) {
     }
     console.error("[addMealAction]", error);
     return { success: false, status: 500, message: "Failed to log meal" };
+  }
+}
+
+export async function updateMealAction(
+  input: z.infer<typeof updateMealSchema>
+) {
+  try {
+    const userId = await getUserId();
+    const parsed = updateMealSchema.parse(input);
+
+    await dietService.updateMeal(userId, {
+      mealId: parsed.mealId,
+      type: parsed.mealType as MealType,
+      items: parsed.items,
+      date: parsed.date,
+    });
+
+    revalidatePath("/diet-plan");
+    revalidatePath("/diet-plan/insights");
+    return { success: true, status: 200, message: "Meal updated successfully" };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        status: 400,
+        message: "Invalid meal input",
+        errors: error.flatten().fieldErrors,
+      };
+    }
+    console.error("[updateMealAction]", error);
+    return { success: false, status: 500, message: "Failed to update meal" };
+  }
+}
+
+export async function deleteMealAction(
+  input: z.infer<typeof deleteMealSchema>
+) {
+  try {
+    const userId = await getUserId();
+    const parsed = deleteMealSchema.parse(input);
+
+    await dietService.deleteMeal(userId, parsed.mealId);
+
+    revalidatePath("/diet-plan");
+    revalidatePath("/diet-plan/insights");
+    return { success: true, status: 200, message: "Meal deleted successfully" };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        status: 400,
+        message: "Invalid meal id",
+        errors: error.flatten().fieldErrors,
+      };
+    }
+    console.error("[deleteMealAction]", error);
+    return { success: false, status: 500, message: "Failed to delete meal" };
   }
 }
 

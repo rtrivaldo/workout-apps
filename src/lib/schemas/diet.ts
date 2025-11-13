@@ -50,6 +50,14 @@ export const addMealSchema = z.object({
     .min(1, { message: "At least one food item is required" }),
 });
 
+export const updateMealSchema = addMealSchema.extend({
+  mealId: z.coerce.number({ message: "Meal id is required" }).int().positive(),
+});
+
+export const deleteMealSchema = z.object({
+  mealId: z.coerce.number({ message: "Meal id is required" }).int().positive(),
+});
+
 const optionalNumber = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess(
     (value) =>

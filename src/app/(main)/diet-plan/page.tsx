@@ -18,7 +18,7 @@ export default async function DietPlanPage() {
 
   const [dailyLog, foods] = await Promise.all([
     dietService.getDailyLog(user.id),
-    foodService.getAllFoods(user.id, { take: 10 }),
+    foodService.getAllFoods(user.id),
   ]);
   const recommendedCalories =
     dailyLog.goalCalorieTarget ?? dailyLog.dailyNeedCalories ?? null;
@@ -56,8 +56,8 @@ export default async function DietPlanPage() {
       <CalorieSummaryCard log={dailyLog} />
 
       <div className='grid gap-6 lg:grid-cols-[1.5fr_1fr]'>
-        <MealList meals={dailyLog.meals} />
-        <FoodLibraryTable foods={foods} manageHref='/diet-plan/foods' />
+        <MealList meals={dailyLog.meals} foods={foods} />
+        <FoodLibraryTable foods={foods.slice(0, 10)} manageHref='/diet-plan/foods' />
       </div>
     </div>
   );
