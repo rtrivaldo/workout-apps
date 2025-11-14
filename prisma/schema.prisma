@@ -26,6 +26,7 @@ model User {
   activityLevel      ActivityLevel?
   targetWeight       Float?
   lastCalculatedTdee Float?
+  lastGoalCalories   Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -34,7 +35,6 @@ model User {
   workouts     Workout[]
   foods        Food[]
   dailyLogs    DailyLog[]
-  weightLogs   WeightLog[]
 }
 
 model WorkoutPlan {
@@ -125,6 +125,7 @@ model DailyLog {
   date                DateTime  @db.Date
   dailyNeedCalories   Float?
   manualCalorieTarget Float?
+  goalCalorieTarget   Float?
   caloriesIn          Float     @default(0)
   caloriesOut         Float     @default(0)
   netCalories         Float     @default(0)
@@ -171,20 +172,6 @@ model MealFood {
 
   meal Meal  @relation(fields: [mealId], references: [id])
   food Food? @relation(fields: [foodId], references: [id], onDelete: SetNull)
-}
-
-model WeightLog {
-  id       Int      @id @default(autoincrement())
-  userId   Int
-  weight   Float
-  loggedAt DateTime @default(now())
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
-
-  @@unique([userId, loggedAt], name: "userId_loggedAt")
 }
 
 enum Gender {

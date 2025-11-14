@@ -4,7 +4,10 @@ import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { updateProfileSchema } from "@/lib/schemas/update-profile-schema";
 import { redirect } from "next/navigation";
-import { calculateDailyCalories } from "@/lib/utils";
+import {
+  calculateDailyCalories,
+  calculateGoalCalorieTarget,
+} from "@/lib/utils";
 import { ProfileFieldKey, getProfileStatus } from "@/lib/profile";
 import { User } from "@prisma/client";
 
@@ -84,9 +87,14 @@ export async function updateUserData(formData: FormData, userId: number) {
     const normalizedTargetWeight =
       fitnessGoal === "MAINTAIN_WEIGHT" ? bodyWeight : targetWeight ?? null;
 
+    //hitung TTDEE
     const calculatedTdee =
       calculateDailyCalories(bodyWeight, height, age, gender, activityLevel) ??
       existingUser.lastCalculatedTdee;
+    // hitung goal TTDEE
+    const goalCalories =
+      calculateGoalCalorieTarget(calculatedTdee, fitnessGoal) ??
+      existingUser.lastGoalCalories;
 
     const user = await prisma.user.update({
       where: { id: userId },
@@ -100,19 +108,20 @@ export async function updateUserData(formData: FormData, userId: number) {
         activityLevel: activityLevel || null,
         targetWeight: normalizedTargetWeight,
         lastCalculatedTdee: calculatedTdee ?? null,
+        lastGoalCalories: goalCalories ?? null,
       },
     });
 
+    // Ensure today's daily log mirrors the newly-updated profile snapshot.
     const today = new Date();
     const normalizedDate = new Date(
       Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
     );
-
-    // Ensure today's daily log mirrors the newly-updated profile snapshot.
     await prisma.dailyLog.upsert({
       where: { userId_date: { userId: user.id, date: normalizedDate } },
       update: {
         dailyNeedCalories: calculatedTdee ?? undefined,
+        goalCalorieTarget: goalCalories ?? undefined,
         currentWeight: bodyWeight,
         targetWeight: normalizedTargetWeight ?? undefined,
       },
@@ -120,6 +129,7 @@ export async function updateUserData(formData: FormData, userId: number) {
         userId: user.id,
         date: normalizedDate,
         dailyNeedCalories: calculatedTdee ?? undefined,
+        goalCalorieTarget: goalCalories ?? undefined,
         currentWeight: bodyWeight,
         targetWeight: normalizedTargetWeight ?? undefined,
       },

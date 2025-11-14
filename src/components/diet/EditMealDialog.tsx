@@ -1,17 +1,17 @@
 'use client';
 
-import { addMealAction } from '@/actions/diet/diet.actions';
-import { mealTypeOptions, addMealSchema } from '@/lib/schemas/diet';
+import { updateMealAction } from '@/actions/diet/diet.actions';
+import { updateMealSchema, mealTypeOptions } from '@/lib/schemas/diet';
 import { typedZodResolver } from '@/lib/typed-zod-resolver';
-import { ChevronDown, Plus, Trash2, Check } from 'lucide-react';
-import { useMemo, useState, useTransition } from 'react';
+import type { Food, Meal, MealFood } from '@prisma/client';
+import { Pencil, Plus, Trash2, ChevronDown } from 'lucide-react';
+import { useState, useTransition } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -26,38 +26,36 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
+import type { FoodOption } from './AddMealDialog';
+import { FoodSelect } from './AddMealDialog';
 
-export type FoodOption = {
-  id: number;
-  name: string;
-  serving: string;
-  calories: number;
+type MealForEdit = Meal & {
+  mealFoods: (MealFood & { food: Food | null })[];
 };
 
-type AddMealFormValues = z.infer<typeof addMealSchema>;
+type EditMealDialogProps = {
+  meal: MealForEdit;
+  foods: FoodOption[];
+  disabled?: boolean;
+};
 
-export default function AddMealDialog({ foods }: { foods: FoodOption[] }) {
+export default function EditMealDialog({
+  meal,
+  foods,
+  disabled,
+}: EditMealDialogProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<AddMealFormValues>({
-    resolver: typedZodResolver(addMealSchema),
+  const form = useForm<z.infer<typeof updateMealSchema>>({
+    resolver: typedZodResolver(updateMealSchema),
     defaultValues: {
-      mealType: 'BREAKFAST',
-      items: [{ foodId: foods[0]?.id ?? 0, portion: 1 }],
+      mealId: meal.id,
+      mealType: meal.type,
+      items: meal.mealFoods.map(item => ({
+        foodId: item.foodId ?? foods[0]?.id ?? 0,
+        portion: item.portion,
+      })),
     },
   });
 
@@ -66,15 +64,11 @@ export default function AddMealDialog({ foods }: { foods: FoodOption[] }) {
     name: 'items',
   });
 
-  const handleSubmit = (values: AddMealFormValues) => {
+  const handleSubmit = (values: z.infer<typeof updateMealSchema>) => {
     startTransition(async () => {
-      const result = await addMealAction(values);
+      const result = await updateMealAction(values);
       if (result.success) {
         toast.success(result.message);
-        form.reset({
-          mealType: 'BREAKFAST',
-          items: [{ foodId: foods[0]?.id ?? 0, portion: 1 }],
-        });
         setOpen(false);
       } else {
         toast.error(result.message);
@@ -87,23 +81,17 @@ export default function AddMealDialog({ foods }: { foods: FoodOption[] }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={!isFoodAvailable}>
-          <Plus className='mr-2 h-4 w-4' />
-          Add Meal
+        <Button variant='outline' size='icon' disabled={disabled || !isFoodAvailable}>
+          <Pencil className='h-4 w-4' />
         </Button>
       </DialogTrigger>
       <DialogContent className='max-w-2xl'>
         <DialogHeader>
-          <DialogTitle>Add Meal</DialogTitle>
-          <DialogDescription>
-            Log your meal by selecting foods from your library.
-          </DialogDescription>
+          <DialogTitle>Edit Meal</DialogTitle>
         </DialogHeader>
 
         {!isFoodAvailable ? (
-          <div className='text-sm text-red-500'>
-            No foods available. Please add food to your library first.
-          </div>
+          <div className='text-sm text-red-500'>No foods available to edit this meal.</div>
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
@@ -140,7 +128,12 @@ export default function AddMealDialog({ foods }: { foods: FoodOption[] }) {
                     type='button'
                     variant='outline'
                     size='sm'
-                    onClick={() => append({ foodId: foods[0].id, portion: 1 })}
+                    onClick={() =>
+                      append({
+                        foodId: foods[0]?.id ?? 0,
+                        portion: 1,
+                      })
+                    }
                   >
                     <Plus className='mr-1 h-4 w-4' /> Add
                   </Button>
@@ -203,78 +196,15 @@ export default function AddMealDialog({ foods }: { foods: FoodOption[] }) {
                 ))}
               </div>
 
+              <input type='hidden' {...form.register('mealId')} />
+
               <Button type='submit' className='w-full' disabled={isPending}>
-                {isPending ? 'Saving...' : 'Save Meal'}
+                {isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </form>
           </Form>
         )}
       </DialogContent>
     </Dialog>
-  );
-}
-
-type FoodSelectProps = {
-  foods: FoodOption[];
-  value: number;
-  onChange: (foodId: number) => void;
-};
-
-export function FoodSelect({ foods, value, onChange }: FoodSelectProps) {
-  const [open, setOpen] = useState(false);
-  const selectedFood = useMemo(
-    () => foods.find(food => food.id === value),
-    [foods, value]
-  );
-
-  const label = selectedFood
-    ? `${selectedFood.name} (${selectedFood.calories} kcal)`
-    : 'Select food';
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          type='button'
-          className='relative w-full h-11 border rounded-md px-3 pr-10 text-left bg-white flex items-center min-w-0'
-        >
-          <span className='truncate flex-1 min-w-0' title={label}>
-            {label}
-          </span>
-          <ChevronDown className='h-4 w-4 text-neutral-400 absolute right-3 top-1/2 -translate-y-1/2' />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className='p-0 w-[320px]'>
-        <Command>
-          <CommandInput placeholder='Search food...' />
-          <CommandList>
-            <CommandEmpty>No food found.</CommandEmpty>
-            <CommandGroup>
-              {foods.map(food => (
-                <CommandItem
-                  key={food.id}
-                  value={`${food.name} ${food.calories}`}
-                  onSelect={() => {
-                    onChange(food.id);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={`mr-2 h-4 w-4 ${food.id === value ? 'opacity-100' : 'opacity-0'
-                      }`}
-                  />
-                  <div className='flex flex-col text-left'>
-                    <span>{food.name}</span>
-                    <span className='text-xs text-neutral-500'>
-                      {food.calories} kcal • {food.serving}
-                    </span>
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
   );
 }
