@@ -42,13 +42,6 @@ export default async function Home() {
           pageUrl='/diet-plan'
           className='bg-[#E1F4E2]'
         />
-
-        <DashboardMenuCard
-          title='Progress'
-          description='Record and monitor your health progress.'
-          imageSrc='/images/progress.png'
-          className='bg-[#FDF0FF]'
-        />
       </div>
     </div>
   );

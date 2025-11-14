@@ -18,13 +18,13 @@ export const addWorkoutSchema = z.object({
         sets: z
           .array(
             z.object({
-              reps: z
+              reps: z.coerce
                 .number({ message: 'Reps must be a number' })
                 .min(1, { message: 'Reps must be at least 1' }),
-              weight: z
+              weight: z.coerce
                 .number({ message: 'Weight must be a number' })
                 .min(0, { message: 'Weight cannot be negative' }),
-              order: z
+              order: z.coerce
                 .number({ message: 'Order must be a number' })
                 .min(1, { message: 'Order must be at least 1' }),
             })

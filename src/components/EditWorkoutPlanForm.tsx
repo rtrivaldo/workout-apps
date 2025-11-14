@@ -32,7 +32,7 @@ export default function EditWorkoutPlanForm({
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<EditWorkoutPlanValues>({
-    resolver: zodResolver(editWorkoutPlanSchema),
+    resolver: zodResolver(editWorkoutPlanSchema as any),
     defaultValues: {
       title: workoutPlan.title,
       exercises: workoutPlan.exercisePlan.map(exercise => ({
@@ -127,15 +127,7 @@ export default function EditWorkoutPlanForm({
                       <FormItem className='w-full'>
                         <FormLabel>Total Sets</FormLabel>
                         <FormControl>
-                          <Input
-                            type='number'
-                            placeholder='e.g. 4'
-                            {...field}
-                            value={field.value ?? ''}
-                            onChange={e =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
+                          <Input type='text' placeholder='e.g. 4' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

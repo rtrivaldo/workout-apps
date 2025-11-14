@@ -10,7 +10,7 @@ export const editWorkoutPlanSchema = z.object({
         name: z.string().min(3, {
           message: 'Exercise name must be at least 3 characters long',
         }),
-        totalSets: z
+        totalSets: z.coerce
           .number({ message: 'Total sets must be a number' })
           .min(1, { message: 'Total sets must be at least 1' }),
       })

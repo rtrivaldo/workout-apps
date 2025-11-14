@@ -46,7 +46,7 @@ export default function AddWorkoutForm({
   const router = useRouter();
 
   const form = useForm<AddWorkoutValues>({
-    resolver: zodResolver(addWorkoutSchema),
+    resolver: zodResolver(addWorkoutSchema as any),
     defaultValues: {
       title: '',
       startTime: getCurrentDateTimeLocal(),
@@ -279,7 +279,6 @@ function ExerciseForm({
           onClick={() => {
             removeExercise(exerciseIndex);
 
-            // ✅ Reorder exercises and nested sets
             const updatedExercises = form
               .getValues('exercises')
               .map((ex: ExerciseFormData, i: number) => ({
@@ -343,13 +342,7 @@ function ExerciseForm({
                 <FormItem className='w-full'>
                   <FormLabel>Reps</FormLabel>
                   <FormControl>
-                    <Input
-                      type='number'
-                      min={0}
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={e => field.onChange(Number(e.target.value))}
-                    />
+                    <Input type='text' min={0} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -365,14 +358,7 @@ function ExerciseForm({
                 <FormItem className='w-full'>
                   <FormLabel>Weight (kg)</FormLabel>
                   <FormControl>
-                    <Input
-                      type='number'
-                      min={0}
-                      step={0.1}
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={e => field.onChange(Number(e.target.value))}
-                    />
+                    <Input type='text' min={0} step={0.1} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
